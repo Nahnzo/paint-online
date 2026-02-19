@@ -1,0 +1,17 @@
+.typeVariantsContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.brushIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 5px;
+  cursor: pointer;
+  height: 33px;
+  width: 33px;
+  border: 1px solid teal;
+  border-radius: 2px;
+}

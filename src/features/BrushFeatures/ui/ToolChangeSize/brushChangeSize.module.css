@@ -1,0 +1,36 @@
+.brushSizeContainer {
+  display: flex;
+  flex-direction: column;
+  width: 185px;
+  height: 60px;
+}
+
+.brushBlockSizes {
+  display: flex;
+  align-items: center;
+}
+
+.sizeBlock {
+  height: 33px;
+  width: 33px;
+  display: flex;
+  justify-content: center;
+  border: 1px solid teal;
+  align-items: center;
+  border-radius: 2px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.activeSizeBlock {
+  height: 33px;
+  width: 33px;
+  font-size: 18px;
+  display: flex;
+  justify-content: center;
+  border: 1px solid teal;
+  align-items: center;
+  border-radius: 2px;
+  cursor: pointer;
+  margin-left: auto;
+}

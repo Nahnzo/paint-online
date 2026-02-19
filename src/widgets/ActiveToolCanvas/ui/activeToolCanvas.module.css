@@ -1,0 +1,6 @@
+.activeToolContainer {
+  display: flex;
+  flex-direction: column;
+  width: 185px;
+  height: auto;
+}

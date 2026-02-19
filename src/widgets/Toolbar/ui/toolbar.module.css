@@ -1,0 +1,33 @@
+.toolbar {
+  display: flex;
+  justify-content: center;
+  width: 220px;
+  background-color: rgb(63, 63, 63);
+  z-index: 1000;
+  padding: 5px;
+  border-radius: 0 5px 5px 0;
+}
+
+.left {
+  position: sticky;
+  display: flex;
+  justify-content: start;
+  flex-direction: column;
+  align-items: center;
+  top: 300px;
+  height: 400px;
+}
+
+.top {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  top: 0;
+  right: 45%;
+  height: 50px;
+  width: 350px;
+  background-color: rgb(63, 63, 63);
+  border-radius: 0px 0px 5px 5px;
+}
