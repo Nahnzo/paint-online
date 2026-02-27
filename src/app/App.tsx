@@ -21,7 +21,7 @@ function App() {
         <ActiveToolCanvas />
       </Toolbar>
       <Toolbar position="top">
-        <MousePointer2 onClick={() => canvasAction.setCanvasMode('select')} />
+        <MousePointer2 onClick={() => canvasAction.setCanvasMode('select')} cursor="pointer" />
         <Brush />
         <Shape />
         <FillBucket />

@@ -14,7 +14,7 @@ const Brush = () => {
 
   return (
     <>
-      <BrushIcon onClick={handleCanvasMode} />
+      <BrushIcon onClick={handleCanvasMode} cursor="pointer" />
     </>
   )
 }

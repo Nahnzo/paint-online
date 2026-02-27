@@ -5,7 +5,13 @@ import { ToolType, ToolSettings, ToolStrategy, Point } from 'entities/Tool'
 import { createTool } from 'entities/Tool/model/factory'
 import { useEffect } from 'react'
 import { useAppSelector, useActionCreators } from 'shared/hooks/hooks'
-import { createShapeFrame, isPointInsideShape } from '../utils/utils'
+import {
+  Bounds,
+  createShapeFrame,
+  getShapeBounds,
+  isBoundsInside,
+  isBoundsIntersecting,
+} from '../utils/utils'
 
 export const useMouseDrawing = (
   baseRef: React.RefObject<HTMLCanvasElement>,
@@ -29,22 +35,28 @@ export const useMouseDrawing = (
 
     let drawing = false
     let brush: ToolStrategy | null = null
+    let isSelecting = false
+    let selectionStart: Point | null = null
 
-    const getPoint = (e: MouseEvent): Point => ({
-      x: e.clientX,
-      y: e.clientY,
-    })
+    const getPoint = (e: MouseEvent): Point => {
+      const rect = overlayCanvas.getBoundingClientRect()
+      return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      }
+    }
+
+    const clearOverlay = () => {
+      overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height)
+      overlayCtx.setLineDash([])
+    }
 
     const onMouseDown = (e: MouseEvent) => {
       const point = getPoint(e)
+
       if (canvasMode === 'select') {
-        const hitShape = shapes.find((shape) => isPointInsideShape(point, shape))
-        createShapeFrame(hitShape, overlayRef)
-        if (hitShape) {
-          sceneAction.selectShape(hitShape.id)
-        } else {
-          sceneAction.clearSelection()
-        }
+        isSelecting = true
+        selectionStart = point
         return
       }
 
@@ -54,15 +66,66 @@ export const useMouseDrawing = (
     }
 
     const onMouseMove = (e: MouseEvent) => {
+      const point = getPoint(e)
+
+      if (isSelecting && selectionStart) {
+        const x = Math.min(selectionStart.x, point.x)
+        const y = Math.min(selectionStart.y, point.y)
+        const width = Math.abs(point.x - selectionStart.x)
+        const height = Math.abs(point.y - selectionStart.y)
+
+        clearOverlay()
+
+        overlayCtx.fillStyle = 'rgba(0, 0, 255, 0.2)'
+        overlayCtx.fillRect(x, y, width, height)
+        overlayCtx.strokeStyle = 'blue'
+        overlayCtx.lineWidth = 1
+        overlayCtx.setLineDash([4, 4])
+        overlayCtx.strokeRect(x, y, width, height)
+
+        return
+      }
+
       if (!drawing || !brush) return
-      brush.onMove(baseCtx, overlayCtx, getPoint(e))
+      brush.onMove(baseCtx, overlayCtx, point)
     }
 
-    const onMouseUp = () => {
+    const onMouseUp = (e: MouseEvent) => {
+      const point = getPoint(e)
+
+      if (isSelecting && selectionStart) {
+        const x1 = Math.min(selectionStart.x, point.x)
+        const y1 = Math.min(selectionStart.y, point.y)
+        const x2 = Math.max(selectionStart.x, point.x)
+        const y2 = Math.max(selectionStart.y, point.y)
+
+        const selectionBounds: Bounds = { left: x1, top: y1, right: x2, bottom: y2 }
+        const isLeftToRight = point.x >= selectionStart.x
+
+        const selected = shapes.filter((shape) => {
+          const shapeBounds = getShapeBounds(shape)
+          return isLeftToRight
+            ? isBoundsInside(shapeBounds, selectionBounds)
+            : isBoundsIntersecting(shapeBounds, selectionBounds)
+        })
+
+        clearOverlay()
+
+        if (selected.length > 0) {
+          sceneAction.selectShape(selected[0].id)
+          createShapeFrame(selected[0], overlayRef)
+        } else {
+          sceneAction.clearSelection()
+        }
+        isSelecting = false
+        selectionStart = null
+        return
+      }
+
       if (!drawing || !brush) return
       drawing = false
       brush.onEnd(baseCtx, overlayCtx)
-      overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height)
+      clearOverlay()
       brush = null
     }
 

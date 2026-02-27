@@ -9,7 +9,7 @@ const FillBucket = () => {
     brushAction.setToolType('fill-bucket')
   }
 
-  return <PaintBucketIcon onClick={handleFillBucket} />
+  return <PaintBucketIcon onClick={handleFillBucket} cursor="pointer" />
 }
 
 export default FillBucket

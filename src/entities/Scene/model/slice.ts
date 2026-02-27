@@ -12,7 +12,6 @@ export const sceneSlice = createSlice({
   reducers: {
     addShape(state, action: PayloadAction<ShapeBase>) {
       state.shapes = [...state.shapes, action.payload]
-      console.log(state.shapes)
     },
     selectShape(state, action: PayloadAction<string>) {
       if (!state.selectedShapeIds.includes(action.payload)) {

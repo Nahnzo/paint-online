@@ -14,7 +14,7 @@ const Shape = () => {
 
   return (
     <>
-      <PentagonIcon onClick={handleCanvasMode} />
+      <PentagonIcon onClick={handleCanvasMode} cursor="pointer" />
     </>
   )
 }

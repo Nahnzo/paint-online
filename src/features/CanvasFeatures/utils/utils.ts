@@ -1,51 +1,69 @@
 import { ShapeBase } from 'entities/Scene'
-import { Point } from 'entities/Tool'
 
-export function sign(p1: Point, p2: Point, p3: Point) {
-  return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y)
+export type Bounds = {
+  left: number
+  top: number
+  right: number
+  bottom: number
 }
 
-export function isPointInsideShape(point: Point, shape: ShapeBase) {
+export function getShapeBounds(shape: ShapeBase): Bounds {
   switch (shape.type) {
-    case 'square':
-      return (
-        point.x >= shape.coordinates.x &&
-        point.x <= shape.coordinates.x + (shape.width ?? 0) &&
-        point.y >= shape.coordinates.y &&
-        point.y <= shape.coordinates.y + (shape.height ?? 0)
-      )
-    case 'circle': {
-      const dx = point.x - shape.coordinates.x
-      const dy = point.y - shape.coordinates.y
-      return dx * dx + dy * dy <= (shape.radius ?? 0) ** 2
-    }
-    case 'triangle':
-      {
-        const x1 = shape.coordinates.x
-        const y1 = shape.coordinates.y
+    case 'square': {
+      const x = shape.coordinates.x
+      const y = shape.coordinates.y
+      const w = shape.width ?? 0
+      const h = shape.height ?? 0
 
-        const width = shape.width ?? 0
-        const height = shape.height ?? 0
-
-        const x2 = x1 + width
-        const y2 = y1 + height
-
-        const centerX = (x1 + x2) / 2
-
-        const v1 = { x: centerX, y: y1 }
-        const v2 = { x: x1, y: y2 }
-        const v3 = { x: x2, y: y2 }
-
-        const b1 = sign(point, v1, v2) < 0
-        const b2 = sign(point, v2, v3) < 0
-        const b3 = sign(point, v3, v1) < 0
-
-        return b1 === b2 && b2 === b3
+      return {
+        left: Math.min(x, x + w),
+        right: Math.max(x, x + w),
+        top: Math.min(y, y + h),
+        bottom: Math.max(y, y + h),
       }
-      break
+    }
+
+    case 'circle': {
+      const cx = shape.coordinates.x
+      const cy = shape.coordinates.y
+      const r = shape.radius ?? 0
+
+      return {
+        left: cx - r,
+        right: cx + r,
+        top: cy - r,
+        bottom: cy + r,
+      }
+    }
+
+    case 'triangle': {
+      const x = shape.coordinates.x
+      const y = shape.coordinates.y
+      const w = shape.width ?? 0
+      const h = shape.height ?? 0
+
+      return {
+        left: Math.min(x, x + w),
+        right: Math.max(x, x + w),
+        top: Math.min(y, y + h),
+        bottom: Math.max(y, y + h),
+      }
+    }
   }
 }
 
+export function isBoundsIntersecting(a: Bounds, b: Bounds): boolean {
+  return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom)
+}
+
+export function isBoundsInside(inner: Bounds, outer: Bounds): boolean {
+  return (
+    inner.left >= outer.left &&
+    inner.right <= outer.right &&
+    inner.top >= outer.top &&
+    inner.bottom <= outer.bottom
+  )
+}
 export function createShapeFrame(
   hitShape: ShapeBase,
   overlayRef: React.RefObject<HTMLCanvasElement>,
@@ -53,6 +71,8 @@ export function createShapeFrame(
   const overlayCanvas = overlayRef.current
   const overlayCtx = overlayCanvas.getContext('2d')
   const shape = hitShape
+
+  if (!shape) return
 
   if (shape.type === 'square') {
     const x = shape.coordinates.x
