@@ -1,9 +1,6 @@
-import { useActionCreators, useAppSelector } from 'shared/hooks/hooks'
+import { useAppSelector } from 'shared/hooks/hooks'
 import { getCanvasBackgroundColor, getCanvasMode } from '../model/selectors'
-import { useCanvasResize, useMouseDrawing } from 'features/CanvasFeatures'
-import { getBrushType, getToolSettings } from 'entities/Brush/model/selectors'
-import { sceneActions } from 'entities/Scene/model/slice'
-import { ShapeBase } from 'entities/Scene'
+import { useCanvasResize, useMouseDrawing, useSelectObject } from 'features/CanvasFeatures'
 
 interface CanvasProps {
   baseRef: React.RefObject<HTMLCanvasElement>
@@ -12,18 +9,14 @@ interface CanvasProps {
 
 const Canvas = ({ baseRef, overlayRef }: CanvasProps) => {
   const canvasBackgroundColor = useAppSelector(getCanvasBackgroundColor)
-  const brushType = useAppSelector(getBrushType)
-  const toolSettings = useAppSelector(getToolSettings)
-  const sceneAction = useActionCreators(sceneActions)
-  const canvasMode = useAppSelector(getCanvasMode)
 
-  const handleFinishShape = (shape: ShapeBase) => {
-    sceneAction.addShape(shape)
-  }
+  const canvasMode = useAppSelector(getCanvasMode)
 
   useCanvasResize(baseRef)
   useCanvasResize(overlayRef)
-  useMouseDrawing(baseRef, overlayRef, brushType, toolSettings, canvasMode, handleFinishShape)
+  useMouseDrawing(baseRef, overlayRef)
+  useSelectObject(overlayRef)
+  // useDragObject({ overlayRef })
 
   return (
     <>

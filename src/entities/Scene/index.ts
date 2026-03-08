@@ -1,4 +1,6 @@
-import { sceneReducer } from './model/slice'
+import { sceneReducer, sceneActions } from './model/slice'
 import type { ShapeBase } from './model/types'
 
-export { sceneReducer, ShapeBase }
+import { getSelectedIdsSelector, getShapesSelector } from './model/selectors'
+
+export { sceneReducer, getSelectedIdsSelector, getShapesSelector, sceneActions, ShapeBase }

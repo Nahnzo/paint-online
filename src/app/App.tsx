@@ -9,6 +9,7 @@ import { MousePointer2 } from 'lucide-react'
 import { useActionCreators } from 'shared/hooks/hooks'
 import { FillBucket } from 'entities/FillBucket'
 import './index.css'
+import { Redo, Undo } from 'features/SceneFeatures'
 
 function App() {
   const baseRef = useRef<HTMLCanvasElement>(null)
@@ -25,6 +26,8 @@ function App() {
         <Brush />
         <Shape />
         <FillBucket />
+        <Redo />
+        <Undo />
         <ResetCanvas baseRef={baseRef} overlayRef={overlayRef} />
       </Toolbar>
       <Canvas baseRef={baseRef} overlayRef={overlayRef} />

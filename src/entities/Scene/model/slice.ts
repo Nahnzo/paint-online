@@ -14,9 +14,7 @@ export const sceneSlice = createSlice({
       state.shapes = [...state.shapes, action.payload]
     },
     selectShape(state, action: PayloadAction<string>) {
-      if (!state.selectedShapeIds.includes(action.payload)) {
-        state.selectedShapeIds = [action.payload]
-      }
+      state.selectedShapeIds = [action.payload]
     },
     toggleShapeSelection(state, action: PayloadAction<string>) {
       if (state.selectedShapeIds.includes(action.payload)) {
@@ -25,25 +23,21 @@ export const sceneSlice = createSlice({
         state.selectedShapeIds.push(action.payload)
       }
     },
+
     clearSelection(state) {
       state.selectedShapeIds = []
     },
+
     clearShapes(state) {
       state.shapes = []
     },
-    moveSelectedShapes(state, action: PayloadAction<{ dx: number; dy: number }>) {
-      const { dx, dy } = action.payload
-      state.shapes = state.shapes.map((shape) => {
-        if (state.selectedShapeIds.includes(shape.id)) {
-          return {
-            ...shape,
-            coordinates: {
-              x: shape.coordinates.x + dx,
-              y: shape.coordinates.y + dy,
-            },
-          }
+    moveSelectedShapes(state, action: PayloadAction<{ ids; dx: number; dy: number }>) {
+      const { dx, dy, ids } = action.payload
+      state.shapes.forEach((shape) => {
+        if (ids.includes(shape.id)) {
+          shape.coordinates.x += dx
+          shape.coordinates.y += dy
         }
-        return shape
       })
     },
     removeShape(state, action: PayloadAction<string>) {

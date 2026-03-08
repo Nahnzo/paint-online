@@ -1,4 +1,8 @@
 import { ToolStrategy } from './model/strategy'
 import { ToolType, ToolSettings, Point } from './model/types'
 
-export { ToolStrategy, Point, ToolType, ToolSettings }
+import { createTool } from './model/factory'
+
+export type { Point, ToolSettings, ToolStrategy, ToolType }
+
+export { createTool }

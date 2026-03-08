@@ -10,7 +10,6 @@ export const toolSlice = createSlice({
   initialState,
   reducers: {
     setToolType(state, action: PayloadAction<ToolType>) {
-      console.log(action.payload)
       return TOOL_DEFAULTS[action.payload]
     },
     setSize(state, action: PayloadAction<number>) {

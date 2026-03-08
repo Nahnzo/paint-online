@@ -1,10 +1,20 @@
 import { ShapeBase } from 'entities/Scene'
+import { Point } from 'entities/Tool'
 
 export type Bounds = {
   left: number
   top: number
   right: number
   bottom: number
+}
+
+export function isPointInsideBounds(point: Point, bounds: Bounds) {
+  return (
+    point.x >= bounds.left &&
+    point.x <= bounds.right &&
+    point.y >= bounds.top &&
+    point.y <= bounds.bottom
+  )
 }
 
 export function getShapeBounds(shape: ShapeBase): Bounds {
@@ -52,10 +62,6 @@ export function getShapeBounds(shape: ShapeBase): Bounds {
   }
 }
 
-export function isBoundsIntersecting(a: Bounds, b: Bounds): boolean {
-  return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom)
-}
-
 export function isBoundsInside(inner: Bounds, outer: Bounds): boolean {
   return (
     inner.left >= outer.left &&
@@ -64,6 +70,14 @@ export function isBoundsInside(inner: Bounds, outer: Bounds): boolean {
     inner.bottom <= outer.bottom
   )
 }
+
+export const getSelectionBounds = (a: Point, b: Point): Bounds => ({
+  left: Math.min(a.x, b.x),
+  top: Math.min(a.y, b.y),
+  right: Math.max(a.x, b.x),
+  bottom: Math.max(a.y, b.y),
+})
+
 export function createShapeFrame(
   hitShape: ShapeBase,
   overlayRef: React.RefObject<HTMLCanvasElement>,

@@ -6,6 +6,7 @@ export type ToolType =
   | 'circle'
   | 'triangle'
   | 'fill-bucket'
+
 export type Point = { x: number; y: number }
 
 export interface ToolSettings {
