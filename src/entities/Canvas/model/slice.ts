@@ -14,7 +14,6 @@ export const canvasSlice = createSlice({
   reducers: {
     setCanvasMode(state, action) {
       state.canvasMode = action.payload
-      console.log(action.payload)
     },
     setBackgroundColor(state, action) {
       state.backgroundColor = action.payload

@@ -32,6 +32,7 @@ export const sceneSlice = createSlice({
       state.shapes = []
     },
     moveSelectedShapes(state, action: PayloadAction<{ ids; dx: number; dy: number }>) {
+      console.log(action.payload)
       const { dx, dy, ids } = action.payload
       state.shapes.forEach((shape) => {
         if (ids.includes(shape.id)) {

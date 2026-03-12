@@ -31,7 +31,11 @@ export class Square implements ToolStrategy {
   }
 
   onEnd(baseCtx: CanvasRenderingContext2D, overlayCtx: CanvasRenderingContext2D) {
+    if (!this.width && !this.height) {
+      return
+    }
     baseCtx.drawImage(overlayCtx.canvas, 0, 0)
+
     this.onFinishShape({
       id: crypto.randomUUID(),
       type: 'square',

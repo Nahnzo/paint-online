@@ -1,80 +1,102 @@
+import { useEffect, useRef } from 'react'
+import { useAppDispatch, useAppSelector } from 'shared/hooks/hooks'
 import { sceneActions } from 'entities/Scene/model/slice'
 import { Point } from 'entities/Tool'
-import { useEffect } from 'react'
-import { useAppDispatch, useAppSelector } from 'shared/hooks/hooks'
-import { Bounds, getShapeBounds, isPointInsideBounds } from '../utils/utils'
-interface UseDragObject {
-  overlayRef: React.RefObject<HTMLCanvasElement>
-}
+import { createShapeFrame, getShapeBounds, isPointInsideBounds } from '../utils/utils'
+import { DEFAULT_BACKGROUND_CANVAS_VALUE } from 'shared/consts/consts'
 
-export const useDragObject = ({ overlayRef }: UseDragObject) => {
+export const useDragObject = (
+  baseRef: React.RefObject<HTMLCanvasElement>,
+  overlayRef: React.RefObject<HTMLCanvasElement>,
+) => {
   const selectedIds = useAppSelector((state) => state.scene.selectedShapeIds)
   const shapes = useAppSelector((state) => state.scene.shapes)
   const dispatch = useAppDispatch()
 
+  const isDragging = useRef(false)
+  const lastPoint = useRef<Point | null>(null)
+  const shapesRef = useRef(shapes)
+  const selectedIdsRef = useRef(selectedIds)
+
   useEffect(() => {
-    const canvas = overlayRef.current
-    if (!canvas) return
+    shapesRef.current = shapes
+  }, [shapes])
 
-    let isDragging = false
-    let lastPoint: Point | null = null
+  useEffect(() => {
+    selectedIdsRef.current = selectedIds
+  }, [selectedIds])
 
-    const getPoint = (e: MouseEvent): Point => {
-      const rect = canvas.getBoundingClientRect()
-      return {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-      }
+  useEffect(() => {
+    const base = baseRef.current
+    const overlay = overlayRef.current
+    if (!base || !overlay) return
+
+    const baseCtx = base.getContext('2d')
+    const overlayCtx = overlay.getContext('2d')
+    if (!baseCtx || !overlayCtx) return
+
+    const getPoint = (e: MouseEvent) => {
+      const rect = overlay.getBoundingClientRect()
+      return { x: e.clientX - rect.left, y: e.clientY - rect.top }
+    }
+
+    const drawOverlay = (currentShapes: typeof shapes) => {
+      overlayCtx.clearRect(0, 0, overlay.width, overlay.height)
+      const selectedShape = currentShapes.find((s) => selectedIdsRef.current.includes(s.id))
+      if (!selectedShape) return
+
+      const { x, y } = selectedShape.coordinates
+      const width = selectedShape.width
+      const height = selectedShape.height
+      overlayCtx.fillStyle = DEFAULT_BACKGROUND_CANVAS_VALUE
+      overlayCtx.fillRect(x, y, width, height)
+      createShapeFrame(selectedShape, overlayRef)
     }
 
     const onMouseDown = (e: MouseEvent) => {
       const point = getPoint(e)
-
-      const hoveredShape = shapes.find((shape) => {
-        const bounds = getShapeBounds(shape)
-        return isPointInsideBounds(point, bounds)
-      })
-
-      if (!hoveredShape) return
-      if (!selectedIds.includes(hoveredShape.id)) return
-
-      isDragging = true
-      lastPoint = point
-      canvas.style.cursor = 'grabbing'
+      const currentShapes = shapesRef.current
+      const currentIds = selectedIdsRef.current
+      const hovered = currentShapes.find(
+        (s) => currentIds.includes(s.id) && isPointInsideBounds(point, getShapeBounds(s)),
+      )
+      if (!hovered) return
+      isDragging.current = true
+      lastPoint.current = point
     }
 
     const onMouseMove = (e: MouseEvent) => {
-      if (!isDragging || !lastPoint) return
+      if (!isDragging.current || !lastPoint.current) return
 
       const point = getPoint(e)
-      const dx = point.x - lastPoint.x
-      const dy = point.y - lastPoint.y
+      const dx = point.x - lastPoint.current.x
+      const dy = point.y - lastPoint.current.y
 
-      dispatch(
-        sceneActions.moveSelectedShapes({
-          ids: selectedIds,
-          dx,
-          dy,
-        }),
+      const updatedShapes = shapesRef.current.map((s) =>
+        selectedIdsRef.current.includes(s.id)
+          ? { ...s, coordinates: { x: s.coordinates.x + dx, y: s.coordinates.y + dy } }
+          : s,
       )
 
-      lastPoint = point
+      dispatch(sceneActions.moveSelectedShapes({ ids: selectedIdsRef.current, dx, dy }))
+
+      lastPoint.current = point
+      drawOverlay(updatedShapes)
     }
 
     const onMouseUp = () => {
-      isDragging = false
-      lastPoint = null
-      canvas.style.cursor = 'default'
+      isDragging.current = false
+      lastPoint.current = null
     }
 
-    canvas.addEventListener('mousedown', onMouseDown)
-    canvas.addEventListener('mousemove', onMouseMove)
+    overlay.addEventListener('mousedown', onMouseDown)
+    overlay.addEventListener('mousemove', onMouseMove)
     window.addEventListener('mouseup', onMouseUp)
 
     return () => {
-      canvas.removeEventListener('mousedown', onMouseDown)
-      canvas.removeEventListener('mousemove', onMouseMove)
+      overlay.removeEventListener('mousedown', onMouseDown)
+      overlay.removeEventListener('mousemove', onMouseMove)
       window.removeEventListener('mouseup', onMouseUp)
     }
-  }, [overlayRef, selectedIds, dispatch])
+  }, [baseRef, overlayRef, dispatch])
 }

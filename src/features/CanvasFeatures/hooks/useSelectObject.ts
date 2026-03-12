@@ -1,6 +1,7 @@
 import { Point } from 'entities/Tool'
 import { useEffect } from 'react'
 import { useActionCreators, useAppSelector } from 'shared/hooks/hooks'
+
 import {
   createShapeFrame,
   getSelectionBounds,
@@ -15,12 +16,13 @@ export const useSelectObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
   const shapes = useAppSelector(getShapesSelector)
   const selectedIds = useAppSelector(getSelectedIdsSelector)
   const canvasMode = useAppSelector(getCanvasMode)
+
   const sceneAction = useActionCreators(sceneActions)
 
   useEffect(() => {
-    if (canvasMode !== 'select') return
     const canvas = overlayRef.current
     if (!canvas) return
+
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
@@ -28,6 +30,7 @@ export const useSelectObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
 
     const getPoint = (e: MouseEvent): Point => {
       const rect = canvas.getBoundingClientRect()
+
       return {
         x: e.clientX - rect.left,
         y: e.clientY - rect.top,
@@ -40,19 +43,23 @@ export const useSelectObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
     }
 
     const onMouseDown = (e: MouseEvent) => {
+      if (canvasMode !== 'select') return
+
       selectionStart = getPoint(e)
     }
 
     const onMouseMove = (e: MouseEvent) => {
+      const point = getPoint(e)
+
       if (!selectionStart) return
 
-      const point = getPoint(e)
       const x = Math.min(selectionStart.x, point.x)
       const y = Math.min(selectionStart.y, point.y)
       const width = Math.abs(point.x - selectionStart.x)
       const height = Math.abs(point.y - selectionStart.y)
 
       clearOverlay()
+
       ctx.fillStyle = 'rgba(0,0,255,0.2)'
       ctx.fillRect(x, y, width, height)
 
@@ -64,7 +71,9 @@ export const useSelectObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
 
     const onMouseUp = (e: MouseEvent) => {
       if (!selectionStart) return
+
       const point = getPoint(e)
+
       const selectionBounds = getSelectionBounds(selectionStart, point)
 
       const selectedShapes = shapes.filter((shape) =>
@@ -78,7 +87,6 @@ export const useSelectObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
       }
 
       selectionStart = null
-      // renderSelectionFrames()
     }
 
     canvas.addEventListener('mousedown', onMouseDown)
@@ -101,7 +109,7 @@ export const useSelectObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
 
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-    if (selectedIds.length === 0) return
+    if (!selectedIds.length) return
 
     const selectedShape = shapes.find((shape) => shape.id === selectedIds[0])
 

@@ -153,3 +153,66 @@ export function createShapeFrame(
     )
   }
 }
+
+export function renderShapes(ctx: CanvasRenderingContext2D, shapes: ShapeBase[]) {
+  shapes.forEach((shape) => {
+    const { x, y } = shape.coordinates
+    const { color = '#000000', size = 1 } = shape.settings
+
+    ctx.save()
+    ctx.strokeStyle = color
+    ctx.fillStyle = color
+    ctx.lineWidth = size
+
+    if (shape.type === 'square') {
+      const width = shape.width ?? 0
+      const height = shape.height ?? 0
+      const left = Math.min(x, x + width)
+      const top = Math.min(y, y + height)
+      ctx.strokeRect(left, top, Math.abs(width), Math.abs(height))
+    }
+
+    if (shape.type === 'circle') {
+      const radius = shape.radius ?? 0
+      ctx.beginPath()
+      ctx.arc(x, y, radius, 0, Math.PI * 2)
+      ctx.stroke()
+    }
+
+    if (shape.type === 'triangle') {
+      const width = shape.width ?? 0
+      const height = shape.height ?? 0
+      const x2 = x + width
+      const y2 = y + height
+      const centerX = (x + x2) / 2
+
+      ctx.beginPath()
+      ctx.moveTo(centerX, y)
+      ctx.lineTo(x, y2)
+      ctx.lineTo(x2, y2)
+      ctx.closePath()
+      ctx.stroke()
+    }
+
+    ctx.restore()
+  })
+}
+
+import { useEffect } from 'react'
+import { useAppSelector } from 'shared/hooks/hooks'
+import { getShapesSelector } from 'entities/Scene'
+
+export const useRenderBase = (baseRef: React.RefObject<HTMLCanvasElement>) => {
+  const shapes = useAppSelector(getShapesSelector)
+
+  useEffect(() => {
+    const canvas = baseRef.current
+    if (!canvas) return
+
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    renderShapes(ctx, shapes)
+  }, [shapes, baseRef])
+}
