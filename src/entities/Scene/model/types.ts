@@ -14,4 +14,6 @@ export interface ShapeBase {
 export interface InitialSceneState {
   shapes: ShapeBase[]
   selectedShapeIds: string[]
+  pastScene: ShapeBase[][]
+  futureScene: ShapeBase[][]
 }

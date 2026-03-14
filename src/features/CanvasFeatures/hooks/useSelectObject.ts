@@ -91,12 +91,12 @@ export const useSelectObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
 
     canvas.addEventListener('mousedown', onMouseDown)
     canvas.addEventListener('mousemove', onMouseMove)
-    window.addEventListener('mouseup', onMouseUp)
+    canvas.addEventListener('mouseup', onMouseUp)
 
     return () => {
       canvas.removeEventListener('mousedown', onMouseDown)
       canvas.removeEventListener('mousemove', onMouseMove)
-      window.removeEventListener('mouseup', onMouseUp)
+      canvas.removeEventListener('mouseup', onMouseUp)
     }
   }, [canvasMode, shapes, selectedIds, sceneAction, overlayRef])
 

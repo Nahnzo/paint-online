@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { useAppDispatch, useAppSelector } from 'shared/hooks/hooks'
+import { useActionCreators, useAppSelector } from 'shared/hooks/hooks'
 import { sceneActions } from 'entities/Scene/model/slice'
 import { Point } from 'entities/Tool'
 import { createShapeFrame, getShapeBounds, isPointInsideBounds } from '../utils/utils'
@@ -11,12 +11,18 @@ export const useDragObject = (
 ) => {
   const selectedIds = useAppSelector((state) => state.scene.selectedShapeIds)
   const shapes = useAppSelector((state) => state.scene.shapes)
-  const dispatch = useAppDispatch()
+  const sceneAction = useActionCreators(sceneActions)
+  const sceneActionRef = useRef(sceneAction)
 
   const isDragging = useRef(false)
   const lastPoint = useRef<Point | null>(null)
   const shapesRef = useRef(shapes)
+  const snapshotRef = useRef(shapes)
   const selectedIdsRef = useRef(selectedIds)
+
+  useEffect(() => {
+    sceneActionRef.current = sceneAction
+  }, [sceneAction])
 
   useEffect(() => {
     shapesRef.current = shapes
@@ -57,6 +63,7 @@ export const useDragObject = (
       const point = getPoint(e)
       const currentShapes = shapesRef.current
       const currentIds = selectedIdsRef.current
+      snapshotRef.current = shapesRef.current
       const hovered = currentShapes.find(
         (s) => currentIds.includes(s.id) && isPointInsideBounds(point, getShapeBounds(s)),
       )
@@ -78,25 +85,27 @@ export const useDragObject = (
           : s,
       )
 
-      dispatch(sceneActions.moveSelectedShapes({ ids: selectedIdsRef.current, dx, dy }))
+      sceneActionRef.current.moveSelectedShapes({ ids: selectedIdsRef.current, dx, dy })
 
       lastPoint.current = point
       drawOverlay(updatedShapes)
     }
 
     const onMouseUp = () => {
+      if (!isDragging.current) return
       isDragging.current = false
       lastPoint.current = null
+      sceneActionRef.current.commitMove(snapshotRef.current)
     }
 
     overlay.addEventListener('mousedown', onMouseDown)
     overlay.addEventListener('mousemove', onMouseMove)
-    window.addEventListener('mouseup', onMouseUp)
+    overlay.addEventListener('mouseup', onMouseUp)
 
     return () => {
       overlay.removeEventListener('mousedown', onMouseDown)
       overlay.removeEventListener('mousemove', onMouseMove)
-      window.removeEventListener('mouseup', onMouseUp)
+      overlay.removeEventListener('mouseup', onMouseUp)
     }
-  }, [baseRef, overlayRef, dispatch])
+  }, [baseRef, overlayRef])
 }

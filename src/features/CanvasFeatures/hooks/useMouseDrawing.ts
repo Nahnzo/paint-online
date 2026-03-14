@@ -96,12 +96,12 @@ export const useMouseDrawing = (
 
     overlayCanvas.addEventListener('mousedown', onMouseDown)
     overlayCanvas.addEventListener('mousemove', onMouseMove)
-    window.addEventListener('mouseup', onMouseUp)
+    overlayCanvas.addEventListener('mouseup', onMouseUp)
 
     return () => {
       overlayCanvas.removeEventListener('mousedown', onMouseDown)
       overlayCanvas.removeEventListener('mousemove', onMouseMove)
-      window.removeEventListener('mouseup', onMouseUp)
+      overlayCanvas.removeEventListener('mouseup', onMouseUp)
     }
   }, [baseRef, overlayRef, brushType, toolSettings, canvasMode])
 }
