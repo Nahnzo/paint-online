@@ -1,12 +1,13 @@
 import { useAppSelector } from 'shared/hooks/hooks'
-import { getCanvasBackgroundColor, getCanvasMode } from '../model/selectors'
+import { getCanvasBackgroundColor } from '../model/selectors'
 import {
   useCanvasResize,
   useDragObject,
   useMouseDrawing,
+  useResizeObject,
   useSelectObject,
 } from 'features/CanvasFeatures'
-import { useRenderBase } from 'features/CanvasFeatures/utils/utils'
+import { useRenderBase } from 'features/SceneFeatures'
 
 interface CanvasProps {
   baseRef: React.RefObject<HTMLCanvasElement>
@@ -16,12 +17,11 @@ interface CanvasProps {
 const Canvas = ({ baseRef, overlayRef }: CanvasProps) => {
   const canvasBackgroundColor = useAppSelector(getCanvasBackgroundColor)
 
-  const canvasMode = useAppSelector(getCanvasMode)
-
   useCanvasResize(baseRef)
   useCanvasResize(overlayRef)
   useMouseDrawing(baseRef, overlayRef)
   useRenderBase(baseRef)
+  useResizeObject(overlayRef)
   useDragObject(baseRef, overlayRef)
   useSelectObject(overlayRef)
 
@@ -42,7 +42,6 @@ const Canvas = ({ baseRef, overlayRef }: CanvasProps) => {
           position: 'fixed',
           top: 0,
           left: 0,
-          cursor: canvasMode === 'select' ? '' : 'crosshair',
           pointerEvents: 'auto',
         }}
       />

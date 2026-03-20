@@ -2,8 +2,10 @@ import { useEffect, useRef } from 'react'
 import { useActionCreators, useAppSelector } from 'shared/hooks/hooks'
 import { sceneActions } from 'entities/Scene/model/slice'
 import { Point } from 'entities/Tool'
-import { createShapeFrame, getShapeBounds, isPointInsideBounds } from '../utils/utils'
+import { isPointInsideBounds } from '../utils/utils'
 import { DEFAULT_BACKGROUND_CANVAS_VALUE } from 'shared/consts/consts'
+import { createShapeFrame, getShapeBounds } from 'features/ShapeFeatures'
+import { getGroupBounds } from 'features/ShapeFeatures'
 
 export const useDragObject = (
   baseRef: React.RefObject<HTMLCanvasElement>,
@@ -64,10 +66,36 @@ export const useDragObject = (
       const currentShapes = shapesRef.current
       const currentIds = selectedIdsRef.current
       snapshotRef.current = shapesRef.current
+
       const hovered = currentShapes.find(
-        (s) => currentIds.includes(s.id) && isPointInsideBounds(point, getShapeBounds(s)),
+        (s) =>
+          currentIds.includes(s.id) &&
+          isPointInsideBounds(
+            point,
+            getShapeBounds(s),
+            s.rotation ?? 0,
+            s.coordinates.x + (s.width ?? 0) / 2,
+            s.coordinates.y + (s.height ?? 0) / 2,
+          ),
       )
-      if (!hovered) return
+
+      if (!hovered && currentIds.length > 1) {
+        const selectedShapes = currentShapes.filter((s) => currentIds.includes(s.id))
+        const groupBounds = getGroupBounds(selectedShapes)
+        if (
+          !isPointInsideBounds(
+            point,
+            groupBounds,
+            0,
+            (groupBounds.left + groupBounds.right) / 2,
+            (groupBounds.top + groupBounds.bottom) / 2,
+          )
+        )
+          return
+      } else if (!hovered) {
+        return
+      }
+
       isDragging.current = true
       lastPoint.current = point
     }

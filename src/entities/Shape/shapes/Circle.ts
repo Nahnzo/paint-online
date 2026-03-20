@@ -43,6 +43,7 @@ export class Circle implements ToolStrategy {
       id: crypto.randomUUID(),
       type: 'circle',
       coordinates: { x: this.startX, y: this.startY },
+      rotation: 0,
       radius: this.radius,
       settings: this.settings,
     })

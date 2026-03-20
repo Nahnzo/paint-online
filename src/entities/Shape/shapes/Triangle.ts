@@ -55,6 +55,7 @@ export class Triangle implements ToolStrategy {
       coordinates: { x: this.startX, y: this.startY },
       width: this.width,
       height: this.height,
+      rotation: 0,
       settings: this.settings,
     })
   }

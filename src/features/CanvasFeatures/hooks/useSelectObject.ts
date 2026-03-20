@@ -1,16 +1,18 @@
 import { Point } from 'entities/Tool'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useActionCreators, useAppSelector } from 'shared/hooks/hooks'
 
-import {
-  createShapeFrame,
-  getSelectionBounds,
-  getShapeBounds,
-  isBoundsInside,
-} from '../utils/utils'
+import { getSelectionBounds, isBoundsInside, isPointInsideBounds } from '../utils/utils'
 
 import { getShapesSelector, getSelectedIdsSelector, sceneActions } from 'entities/Scene'
 import { getCanvasMode } from 'entities/Canvas'
+import { getShapeBounds, createShapeFrame } from 'features/ShapeFeatures'
+import {
+  createMultiFrame,
+  getGroupBounds,
+  getShapeHandles,
+  isPointOnHandle,
+} from 'features/ShapeFeatures/utils/utils'
 
 export const useSelectObject = (overlayRef: React.RefObject<HTMLCanvasElement>) => {
   const shapes = useAppSelector(getShapesSelector)
@@ -19,6 +21,8 @@ export const useSelectObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
 
   const sceneAction = useActionCreators(sceneActions)
 
+  const selectionStartRef = useRef<Point | null>(null)
+
   useEffect(() => {
     const canvas = overlayRef.current
     if (!canvas) return
@@ -26,11 +30,8 @@ export const useSelectObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    let selectionStart: Point | null = null
-
     const getPoint = (e: MouseEvent): Point => {
       const rect = canvas.getBoundingClientRect()
-
       return {
         x: e.clientX - rect.left,
         y: e.clientY - rect.top,
@@ -42,27 +43,61 @@ export const useSelectObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
       ctx.setLineDash([])
     }
 
+    const findHitShape = (point: Point) =>
+      [...shapes]
+        .reverse()
+        .find((shape) =>
+          isPointInsideBounds(
+            point,
+            getShapeBounds(shape),
+            shape.rotation ?? 0,
+            shape.coordinates.x + (shape.width ?? 0) / 2,
+            shape.coordinates.y + (shape.height ?? 0) / 2,
+          ),
+        )
+
     const onMouseDown = (e: MouseEvent) => {
       if (canvasMode !== 'select') return
+      const point = getPoint(e)
 
-      selectionStart = getPoint(e)
+      const currentShape = shapes.find((s) => selectedIds.includes(s.id))
+      if (currentShape) {
+        const handles = getShapeHandles(currentShape)
+        const hitHandle = Object.values(handles).find((handle) => isPointOnHandle(point, handle))
+        if (hitHandle) return
+      }
+
+      const hitShape = findHitShape(point)
+      if (hitShape) {
+        if (!selectedIds.includes(hitShape.id)) {
+          sceneAction.selectShape(hitShape.id)
+        }
+        canvas.style.cursor = 'grabbing'
+        return
+      }
+
+      sceneAction.clearSelection()
+      selectionStartRef.current = point
     }
 
     const onMouseMove = (e: MouseEvent) => {
       const point = getPoint(e)
+      if (canvasMode === 'select') {
+        const hitShape = findHitShape(point)
+        const isSelectedShape = hitShape && selectedIds.includes(hitShape.id)
+        canvas.style.cursor = isSelectedShape ? 'grab' : 'default'
+      }
 
-      if (!selectionStart) return
+      if (!selectionStartRef.current) return
 
-      const x = Math.min(selectionStart.x, point.x)
-      const y = Math.min(selectionStart.y, point.y)
-      const width = Math.abs(point.x - selectionStart.x)
-      const height = Math.abs(point.y - selectionStart.y)
+      const x = Math.min(selectionStartRef.current.x, point.x)
+      const y = Math.min(selectionStartRef.current.y, point.y)
+      const width = Math.abs(point.x - selectionStartRef.current.x)
+      const height = Math.abs(point.y - selectionStartRef.current.y)
 
       clearOverlay()
-
       ctx.fillStyle = 'rgba(0,0,255,0.2)'
       ctx.fillRect(x, y, width, height)
-
       ctx.strokeStyle = 'blue'
       ctx.lineWidth = 1
       ctx.setLineDash([4, 0])
@@ -70,23 +105,26 @@ export const useSelectObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
     }
 
     const onMouseUp = (e: MouseEvent) => {
-      if (!selectionStart) return
+      if (canvasMode === 'select') {
+        canvas.style.cursor = 'default'
+      }
+
+      if (!selectionStartRef.current) return
 
       const point = getPoint(e)
-
-      const selectionBounds = getSelectionBounds(selectionStart, point)
+      const selectionBounds = getSelectionBounds(selectionStartRef.current, point)
 
       const selectedShapes = shapes.filter((shape) =>
         isBoundsInside(getShapeBounds(shape), selectionBounds),
       )
 
       if (selectedShapes.length > 0) {
-        sceneAction.selectShape(selectedShapes[0].id)
+        sceneAction.selectMultiShape(selectedShapes.map((s) => s.id))
       } else {
         sceneAction.clearSelection()
       }
 
-      selectionStart = null
+      selectionStartRef.current = null
     }
 
     canvas.addEventListener('mousedown', onMouseDown)
@@ -108,13 +146,19 @@ export const useSelectObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
     if (!ctx) return
 
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-
     if (!selectedIds.length) return
 
-    const selectedShape = shapes.find((shape) => shape.id === selectedIds[0])
-
-    if (selectedShape) {
-      createShapeFrame(selectedShape, overlayRef)
+    if (selectedIds.length === 1) {
+      const selectedShape = shapes.find((shape) => shape.id === selectedIds[0])
+      if (selectedShape) createShapeFrame(selectedShape, overlayRef)
+    } else {
+      const selectedShapes = shapes.filter((s) => selectedIds.includes(s.id))
+      const groupBounds = getGroupBounds(selectedShapes)
+      createMultiFrame(groupBounds, overlayRef)
     }
-  }, [selectedIds, shapes, overlayRef])
+  })
+  useEffect(() => {
+    if (!overlayRef.current) return
+    overlayRef.current.style.cursor = canvasMode === 'draw' ? 'crosshair' : 'default'
+  }, [canvasMode, overlayRef])
 }

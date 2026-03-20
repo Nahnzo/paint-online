@@ -14,4 +14,5 @@ export interface ToolSettings {
   size?: number
   hardness?: number
   density?: number
+  rotation?: number
 }

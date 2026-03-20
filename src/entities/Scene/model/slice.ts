@@ -25,10 +25,44 @@ export const sceneSlice = createSlice({
         }
       })
     },
+    resizeShape(
+      state,
+      action: PayloadAction<{ id: string; dx: number; dy: number; handle: string; angle: number }>,
+    ) {
+      const shape = state.shapes.find((s) => s.id === action.payload.id)
+      if (!shape) return
+
+      const { dx, dy, handle, angle } = action.payload
+
+      switch (handle) {
+        case 'bottomRight':
+          shape.width = (shape.width ?? 0) + dx
+          shape.height = (shape.height ?? 0) + dy
+          break
+        case 'topLeft':
+          shape.coordinates.x += dx
+          shape.coordinates.y += dy
+          shape.width = (shape.width ?? 0) - dx
+          shape.height = (shape.height ?? 0) - dy
+          break
+        case 'topRight':
+          shape.coordinates.y += dy
+          shape.width = (shape.width ?? 0) + dx
+          shape.height = (shape.height ?? 0) - dy
+          break
+        case 'bottomLeft':
+          shape.coordinates.x += dx
+          shape.width = (shape.width ?? 0) - dx
+          shape.height = (shape.height ?? 0) + dy
+          break
+        case 'rotate':
+          shape.rotation = angle
+          break
+      }
+    },
     undo(state) {
       if (!state.pastScene.length) return
       const previous = state.pastScene[state.pastScene.length - 1]
-      console.log('pastScene length:', state.pastScene.length)
       state.futureScene = [...state.futureScene, [...state.shapes]]
       state.shapes = previous
       state.pastScene = state.pastScene.slice(0, state.pastScene.length - 1)
@@ -42,16 +76,17 @@ export const sceneSlice = createSlice({
       state.futureScene = state.futureScene.slice(0, state.futureScene.length - 1)
     },
     commitMove(state, action) {
-      console.log('commitMove called, pastScene before:', state.pastScene.length)
       state.pastScene = [...state.pastScene, action.payload]
     },
     selectShape(state, action: PayloadAction<string>) {
       state.selectedShapeIds = [action.payload]
     },
+    selectMultiShape(state, action: PayloadAction<string[]>) {
+      state.selectedShapeIds = [...action.payload]
+    },
     clearSelection(state) {
       state.selectedShapeIds = []
     },
-
     clearShapes(state) {
       state.shapes = []
     },

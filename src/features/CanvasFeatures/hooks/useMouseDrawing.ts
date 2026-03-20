@@ -5,7 +5,8 @@ import { ToolStrategy, Point, createTool } from 'entities/Tool'
 import { useEffect, useRef } from 'react'
 import { useActionCreators, useAppSelector } from 'shared/hooks/hooks'
 import { getShapesSelector, getSelectedIdsSelector } from 'entities/Scene'
-import { getShapeBounds, isPointInsideBounds } from '../utils/utils'
+import { isPointInsideBounds } from '../utils/utils'
+import { getShapeBounds, getShapeHandles, isPointOnHandle } from 'features/ShapeFeatures'
 
 export const useMouseDrawing = (
   baseRef: React.RefObject<HTMLCanvasElement>,
@@ -60,15 +61,40 @@ export const useMouseDrawing = (
       const currentIds = selectedIdsRef.current
 
       return currentShapes.some(
-        (s) => currentIds.includes(s.id) && isPointInsideBounds(point, getShapeBounds(s)),
+        (s) =>
+          currentIds.includes(s.id) &&
+          isPointInsideBounds(
+            point,
+            getShapeBounds(s),
+            s.rotation ?? 0,
+            s.coordinates.x + (s.width ?? 0) / 2,
+            s.coordinates.y + (s.height ?? 0) / 2,
+          ),
       )
     }
-
     const onMouseDown = (e: MouseEvent) => {
       const point = getPoint(e)
+      const currentShape = shapesRef.current.find((s) => selectedIdsRef.current.includes(s.id))
+      if (currentShape) {
+        const handles = getShapeHandles(currentShape)
+        const hitHandle = Object.values(handles).find((handle) => isPointOnHandle(point, handle))
+        if (hitHandle) return
+      }
 
-      if (isOverSelectedShape(point)) {
-        overlayCanvas.style.cursor = 'grabbing'
+      const hitShape = [...shapesRef.current]
+        .reverse()
+        .find((s) =>
+          isPointInsideBounds(
+            point,
+            getShapeBounds(s),
+            s.rotation ?? 0,
+            s.coordinates.x + (s.width ?? 0) / 2,
+            s.coordinates.y + (s.height ?? 0) / 2,
+          ),
+        )
+
+      if (hitShape) {
+        sceneAction.selectShape(hitShape.id)
         return
       }
 
