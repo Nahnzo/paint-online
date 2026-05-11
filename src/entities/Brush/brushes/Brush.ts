@@ -12,7 +12,7 @@ export class Brush implements ToolStrategy {
 
   onMove(baseCtx: CanvasRenderingContext2D, _overlayCtx: CanvasRenderingContext2D, point: Point) {
     if (!this.lastPoint) return
-    const { color, size } = this.settings
+    const { color = 'white', size = 1 } = this.settings
 
     baseCtx.strokeStyle = color
     baseCtx.lineWidth = size

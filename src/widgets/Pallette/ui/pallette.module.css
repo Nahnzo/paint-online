@@ -1,0 +1,42 @@
+.colorsContainer {
+  display: grid;
+  grid-template-rows: auto auto 20px;
+  justify-items: center;
+  gap: 4px;
+  padding: 4px;
+}
+
+.colorsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+
+.color {
+  width: 30px;
+  height: 30px;
+  margin: 3px;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.shadesContainer {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+  min-height: 36px;
+}
+
+.inputColorContainer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.colorInput {
+  height: 20px;
+  outline: none;
+  width: 176px;
+}

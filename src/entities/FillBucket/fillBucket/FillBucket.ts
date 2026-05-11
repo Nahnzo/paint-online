@@ -6,7 +6,7 @@ export class FillBucket implements ToolStrategy {
 
   onStart(baseCtx: CanvasRenderingContext2D, _overlayCtx: CanvasRenderingContext2D, point: Point) {
     const { width, height } = baseCtx.canvas
-    const { color } = this.settings
+    const { color = 'white' } = this.settings
 
     const imageData = baseCtx.getImageData(0, 0, width, height)
     const { data } = imageData

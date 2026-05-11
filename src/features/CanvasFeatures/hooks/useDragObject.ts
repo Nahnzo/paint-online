@@ -54,8 +54,8 @@ export const useDragObject = (
       if (!selectedShape) return
 
       const { x, y } = selectedShape.coordinates
-      const width = selectedShape.width
-      const height = selectedShape.height
+      const width = selectedShape.width ?? 1
+      const height = selectedShape.height ?? 1
       overlayCtx.fillStyle = DEFAULT_BACKGROUND_CANVAS_VALUE
       overlayCtx.fillRect(x, y, width, height)
       createShapeFrame(selectedShape, overlayRef)

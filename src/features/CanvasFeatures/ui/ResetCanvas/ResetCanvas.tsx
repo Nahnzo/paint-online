@@ -13,10 +13,10 @@ const ResetCanvas = ({ baseRef, overlayRef }: ResetCanvas) => {
   const sceneAction = useActionCreators(sceneActions)
 
   const resetCanvas = () => {
-    ;[baseRef.current, overlayRef.current].forEach((canvas) => {
+    ;[baseRef?.current, overlayRef?.current].forEach((canvas) => {
       if (!canvas) return
       const ctx = canvas.getContext('2d')
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      ctx?.clearRect(0, 0, canvas.width, canvas.height)
       sceneAction.clearShapes()
     })
     canvasColorActions.setBackgroundColor(DEFAULT_BACKGROUND_CANVAS_VALUE)

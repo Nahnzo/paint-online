@@ -18,7 +18,7 @@ export class Circle implements ToolStrategy {
   }
 
   onMove(_baseCtx: CanvasRenderingContext2D, overlayCtx: CanvasRenderingContext2D, point: Point) {
-    const { color, size } = this.settings
+    const { color = 'white', size = 1 } = this.settings
 
     const dx = point.x - this.startX
     const dy = point.y - this.startY

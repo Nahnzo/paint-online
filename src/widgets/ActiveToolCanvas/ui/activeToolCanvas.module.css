@@ -4,3 +4,19 @@
   width: 185px;
   height: auto;
 }
+
+.toolsContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.activeType {
+  margin-left: 10px;
+  display: flex;
+  height: 33px;
+  width: 33px;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid teal;
+}

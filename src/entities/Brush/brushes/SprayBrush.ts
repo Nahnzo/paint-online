@@ -7,7 +7,7 @@ export class SprayBrush implements ToolStrategy {
   onStart() {}
 
   onMove(baseCtx: CanvasRenderingContext2D, _overlayCtx: CanvasRenderingContext2D, point: Point) {
-    const { color, size, density } = this.settings
+    const { color = 'white', size = 1, density = 1 } = this.settings
 
     baseCtx.fillStyle = color
 

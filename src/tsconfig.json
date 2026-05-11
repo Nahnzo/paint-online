@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "ES2020",
+    "paths": {
+      "app/*": ["./app/*"],
+      "entities/*": ["./entities/*"],
+      "features/*": ["./features/*"],
+      "pages/*": ["./pages/*"],
+      "widgets/*": ["./widgets/*"],
+      "shared/*": ["./shared/*"]
+    },
+    "jsx": "react-jsx",
+    "resolveJsonModule": true,
+    "moduleResolution": "bundler",
+    "allowJs": true
+  },
+  "include": ["../src/**/*"],
+  "exclude": ["../node_modules", "../dist"]
+}

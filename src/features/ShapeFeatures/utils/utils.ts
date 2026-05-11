@@ -2,7 +2,7 @@ import { ShapeBase } from 'entities/Scene'
 import { Point } from 'entities/Tool'
 import { Bounds } from 'features/CanvasFeatures/utils/utils'
 
-export function getShapeBounds(shape: ShapeBase): Bounds {
+export function getShapeBounds(shape: ShapeBase): Bounds | undefined {
   switch (shape.type) {
     case 'square': {
       const x = shape.coordinates.x
@@ -48,10 +48,10 @@ export function getShapeBounds(shape: ShapeBase): Bounds {
 }
 
 export const getGroupBounds = (shapes: ShapeBase[]): Bounds => ({
-  left: Math.min(...shapes.map((s) => getShapeBounds(s).left)),
-  right: Math.max(...shapes.map((s) => getShapeBounds(s).right)),
-  top: Math.min(...shapes.map((s) => getShapeBounds(s).top)),
-  bottom: Math.max(...shapes.map((s) => getShapeBounds(s).bottom)),
+  left: Math.min(...shapes.map((s) => getShapeBounds(s)!.left)),
+  right: Math.max(...shapes.map((s) => getShapeBounds(s)!.right)),
+  top: Math.min(...shapes.map((s) => getShapeBounds(s)!.top)),
+  bottom: Math.max(...shapes.map((s) => getShapeBounds(s)!.bottom)),
 })
 
 const HANDLE_HIT_SIZE = 16
@@ -100,9 +100,10 @@ export const getShapeHandles = (shape: ShapeBase) => {
     rotate: { ...rot, cursor: 'grab' },
   }
 }
+
 export function createMultiFrame(bounds: Bounds, overlayRef: React.RefObject<HTMLCanvasElement>) {
   const overlayCanvas = overlayRef.current
-  const overlayCtx = overlayCanvas.getContext('2d')
+  const overlayCtx = overlayCanvas.getContext('2d')!
 
   const padding = 10
 
@@ -122,7 +123,7 @@ export function createShapeFrame(
   overlayRef: React.RefObject<HTMLCanvasElement>,
 ) {
   const overlayCanvas = overlayRef.current
-  const overlayCtx = overlayCanvas.getContext('2d')
+  const overlayCtx = overlayCanvas.getContext('2d')!
   const shape = hitShape
 
   if (!shape) return
@@ -140,7 +141,7 @@ export function createShapeFrame(
     overlayCtx.save()
     overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height)
     overlayCtx.translate(centerX, centerY)
-    overlayCtx.rotate(shape.rotation)
+    overlayCtx.rotate(shape.rotation ?? 1)
 
     overlayCtx.strokeStyle = 'blue'
     overlayCtx.lineWidth = 1

@@ -5,7 +5,7 @@ export class Eraser implements ToolStrategy {
   constructor(private settings: ToolSettings) {}
 
   onMove(baseCtx: CanvasRenderingContext2D, _overlayCtx: CanvasRenderingContext2D, point: Point) {
-    const { size, hardness = 1 } = this.settings
+    const { size = 1, hardness = 1 } = this.settings
 
     baseCtx.save()
     baseCtx.globalCompositeOperation = 'destination-out'

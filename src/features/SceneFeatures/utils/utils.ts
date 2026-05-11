@@ -18,7 +18,7 @@ export function renderShapes(ctx: CanvasRenderingContext2D, shapes: ShapeBase[])
       const centerX = shape.coordinates.x + (shape.width ?? 0) / 2
       const centerY = shape.coordinates.y + (shape.height ?? 0) / 2
       ctx.translate(centerX, centerY)
-      ctx.rotate(shape.rotation)
+      ctx.rotate(shape.rotation ?? 1)
       ctx.strokeRect(-width / 2, -height / 2, width, height)
       ctx.restore()
     }

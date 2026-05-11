@@ -14,6 +14,7 @@ const TriangleSettings = () => {
   }
   return (
     <div>
+      <p>Stroke</p>
       <ColorPicker action={colorBrushActions.setColor} defaultValue={DEFAULT_COLOR_BRUSH_VALUE} />
       <RangePicker value={brushSize} handler={(e) => changeBrushSize(Number(e))} max={20} min={1} />
     </div>

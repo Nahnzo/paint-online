@@ -1,5 +1,3 @@
-// import { ToolChangeSize } from 'features/BrushFeatures'
-
 import { brushActions } from 'entities/Brush'
 import { useState } from 'react'
 import { useActionCreators } from 'shared/hooks/hooks'

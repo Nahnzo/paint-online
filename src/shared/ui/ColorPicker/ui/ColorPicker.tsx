@@ -1,4 +1,8 @@
 import { useState } from 'react'
+import { Pallette } from 'widgets/Pallette'
+import { Dropdown } from 'shared/ui/Dropdown'
+import { useDropdown } from 'shared/hooks/useDropdown'
+import { defaultColors } from '../model/consts'
 import styles from './colorPicker.module.css'
 
 interface ColorPickerProps {
@@ -6,10 +10,10 @@ interface ColorPickerProps {
   defaultValue: string
 }
 
-const defaultColors = ['#ffffff', '#585858', '#f57575', '#54e710', '#0e82af']
-
 const ColorPicker = ({ defaultValue, action }: ColorPickerProps) => {
   const [activeColor, setActiveColor] = useState(defaultValue)
+
+  const [isOpen, toggle] = useDropdown()
 
   const handleColor = (color: string) => {
     action(color)
@@ -29,7 +33,16 @@ const ColorPicker = ({ defaultValue, action }: ColorPickerProps) => {
         ))}
       </div>
       <div className={styles.separator} />
-      <div className={styles.activeColor} style={{ backgroundColor: activeColor }} />
+      <div
+        className={styles.activeColor}
+        style={{ backgroundColor: activeColor }}
+        onClick={toggle}
+      ></div>
+      <div className={styles.wrapper}>
+        <Dropdown isOpen={isOpen}>
+          <Pallette handleColor={handleColor} />
+        </Dropdown>
+      </div>
     </div>
   )
 }

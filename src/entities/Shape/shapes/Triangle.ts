@@ -19,7 +19,7 @@ export class Triangle implements ToolStrategy {
   }
 
   onMove(_baseCtx: CanvasRenderingContext2D, overlayCtx: CanvasRenderingContext2D, point: Point) {
-    const { color, size } = this.settings
+    const { color = 'white', size = 1 } = this.settings
 
     this.width = point.x - this.startX
     this.height = point.y - this.startY

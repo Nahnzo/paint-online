@@ -8,8 +8,8 @@ import { Shape } from 'entities/Shape'
 import { MousePointer2 } from 'lucide-react'
 import { useActionCreators } from 'shared/hooks/hooks'
 import { FillBucket } from 'entities/FillBucket'
-import './index.css'
 import { Redo, Undo } from 'features/SceneFeatures'
+import './index.css'
 
 function App() {
   const baseRef = useRef<HTMLCanvasElement>(null)

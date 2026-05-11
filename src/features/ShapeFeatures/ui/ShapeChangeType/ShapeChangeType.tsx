@@ -1,11 +1,11 @@
 import { SquareIcon, CircleIcon, TriangleIcon } from 'lucide-react'
 import { useActionCreators } from 'shared/hooks/hooks'
 import { brushActions } from 'entities/Brush'
-import styles from './shapeChangeType.module.css'
 import { canvasActions } from 'entities/Canvas'
 import { ToolType } from 'entities/Tool'
+import styles from './shapeChangeType.module.css'
 
-const ShapeChangeType = () => {
+export const ShapeChangeType = () => {
   const brushTypeActions = useActionCreators(brushActions)
   const canvasAction = useActionCreators(canvasActions)
 

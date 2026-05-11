@@ -13,7 +13,10 @@ const ActiveToolCanvas = () => {
       {toolUI.changeTypeComponent && (
         <>
           <p>Type</p>
-          {toolUI.changeTypeComponent}
+          <div className={styles.toolsContainer}>
+            {toolUI.changeTypeComponent}
+            <div className={styles.activeType}>{toolUI.activeToolIcon}</div>
+          </div>
         </>
       )}
       {toolUI.settingsComponent}
