@@ -1,57 +1,64 @@
-import { ShapeBase } from 'entities/Scene'
+import { SceneNode } from 'entities/Scene'
 import { Point } from 'entities/Tool'
 import { Bounds } from 'features/CanvasFeatures/utils/utils'
+import { RefObject } from 'react'
 
-export function getShapeBounds(shape: ShapeBase): Bounds | undefined {
-  switch (shape.type) {
-    case 'square': {
-      const x = shape.coordinates.x
-      const y = shape.coordinates.y
-      const w = shape.width ?? 0
-      const h = shape.height ?? 0
-
+export function getNodeBounds(node: SceneNode): Bounds {
+  switch (node.type) {
+    case 'rectangle': {
+      const { coordinates = { x: 0, y: 0 }, width = 0, height = 0 } = node
       return {
-        left: Math.min(x, x + w),
-        right: Math.max(x, x + w),
-        top: Math.min(y, y + h),
-        bottom: Math.max(y, y + h),
+        left: coordinates.x,
+        top: coordinates.y,
+        right: coordinates.x + width,
+        bottom: coordinates.y + height,
       }
     }
 
     case 'circle': {
-      const cx = shape.coordinates.x
-      const cy = shape.coordinates.y
-      const r = shape.radius ?? 0
-
+      const { coordinates = { x: 0, y: 0 }, radius = 0 } = node
       return {
-        left: cx - r,
-        right: cx + r,
-        top: cy - r,
-        bottom: cy + r,
+        left: coordinates.x,
+        top: coordinates.y,
+        right: coordinates.x + radius * 2,
+        bottom: coordinates.y + radius * 2,
       }
     }
 
-    case 'triangle': {
-      const x = shape.coordinates.x
-      const y = shape.coordinates.y
-      const w = shape.width ?? 0
-      const h = shape.height ?? 0
-
+    case 'path': {
+      const startPoint = node.points[0]
+      const endPoint = node.points[node.points.length - 1]
+      if (!endPoint) {
+        return {
+          left: startPoint.x,
+          top: startPoint.y,
+          right: startPoint.x,
+          bottom: startPoint.y,
+        }
+      }
       return {
-        left: Math.min(x, x + w),
-        right: Math.max(x, x + w),
-        top: Math.min(y, y + h),
-        bottom: Math.max(y, y + h),
+        left: Math.min(startPoint.x, endPoint.x),
+        top: Math.min(startPoint.y, endPoint.y),
+        right: Math.max(startPoint.x, endPoint.x),
+        bottom: Math.max(startPoint.y, endPoint.y),
       }
     }
   }
 }
 
-export const getGroupBounds = (shapes: ShapeBase[]): Bounds => ({
-  left: Math.min(...shapes.map((s) => getShapeBounds(s)!.left)),
-  right: Math.max(...shapes.map((s) => getShapeBounds(s)!.right)),
-  top: Math.min(...shapes.map((s) => getShapeBounds(s)!.top)),
-  bottom: Math.max(...shapes.map((s) => getShapeBounds(s)!.bottom)),
+export const getResizeCursor = (baseCursor: string, rotation: number) => {
+  const cursors = ['nwse-resize', 'ns-resize', 'nesw-resize', 'ew-resize']
+  const degrees = ((rotation * 180) / Math.PI + 360) % 360
+  const shift = Math.round(degrees / 45) % cursors.length
+  const index = cursors.indexOf(baseCursor)
+  return cursors[(index + shift) % cursors.length]
+}
+
+export const getGroupBounds = (nodes: SceneNode[]): Bounds => ({
+  left: Math.min(...nodes.map((s) => getNodeBounds(s)!.left)),
+  right: Math.max(...nodes.map((s) => getNodeBounds(s)!.right)),
+  top: Math.min(...nodes.map((s) => getNodeBounds(s)!.top)),
+  bottom: Math.max(...nodes.map((s) => getNodeBounds(s)!.bottom)),
 })
 
 const HANDLE_HIT_SIZE = 16
@@ -65,38 +72,34 @@ export const isPointOnHandle = (point: Point, handle: { x: number; y: number }) 
   )
 }
 
-export const getShapeHandles = (shape: ShapeBase) => {
+export const getShapeHandles = (node: SceneNode) => {
+  if (node.type === 'path') return 1
   const padding = 10
-  const x = shape.coordinates.x
-  const y = shape.coordinates.y
-  const width = shape.width ?? 0
-  const height = shape.height ?? 0
-  const rotation = shape.rotation ?? 0
-
+  const x = node.coordinates.x
+  const y = node.coordinates.y
+  const width = node.width ?? 0
+  const height = node.height ?? 0
+  const rotation = node.rotation ?? 0
   const left = Math.min(x, x + width) - padding
   const top = Math.min(y, y + height) - padding
   const w = Math.abs(width) + padding * 2
   const h = Math.abs(height) + padding * 2
-
   const centerX = x + width / 2
   const centerY = y + height / 2
-
   const rotate = (px: number, py: number) => ({
     x: Math.cos(rotation) * (px - centerX) - Math.sin(rotation) * (py - centerY) + centerX,
     y: Math.sin(rotation) * (px - centerX) + Math.cos(rotation) * (py - centerY) + centerY,
   })
-
   const tl = rotate(left, top)
   const tr = rotate(left + w, top)
   const br = rotate(left + w, top + h)
   const bl = rotate(left, top + h)
   const rot = rotate(left + w / 2, top - 20)
-
   return {
-    topLeft: { ...tl, cursor: 'nwse-resize' },
-    topRight: { ...tr, cursor: 'nesw-resize' },
-    bottomRight: { ...br, cursor: 'nwse-resize' },
-    bottomLeft: { ...bl, cursor: 'nesw-resize' },
+    topLeft: { ...tl, cursor: getResizeCursor('nwse-resize', rotation) },
+    topRight: { ...tr, cursor: getResizeCursor('nesw-resize', rotation) },
+    bottomRight: { ...br, cursor: getResizeCursor('nwse-resize', rotation) },
+    bottomLeft: { ...bl, cursor: getResizeCursor('nesw-resize', rotation) },
     rotate: { ...rot, cursor: 'grab' },
   }
 }
@@ -118,8 +121,36 @@ export function createMultiFrame(bounds: Bounds, overlayRef: React.RefObject<HTM
   overlayCtx.strokeRect(x, y, width, height)
 }
 
+export function createPathFrame(
+  pathPoints: RefObject<{
+    lowestX: number
+    lowestY: number
+    highestX: number
+    highestY: number
+  }>,
+  overlayRef: React.RefObject<HTMLCanvasElement>,
+) {
+  const overlayCanvas = overlayRef.current
+  if (!overlayCanvas) return
+
+  const overlayCtx = overlayCanvas.getContext('2d')!
+
+  const x = Math.min(pathPoints.current.highestX, pathPoints.current.lowestX)
+  const y = Math.min(pathPoints.current.highestY, pathPoints.current.lowestY)
+  const w = Math.abs(pathPoints.current.highestX - pathPoints.current.lowestX)
+  const h = Math.abs(pathPoints.current.highestY - pathPoints.current.lowestY)
+  const padding = 10
+
+  overlayCtx.save()
+  overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height)
+  overlayCtx.restore()
+  overlayCtx.strokeStyle = 'blue'
+  overlayCtx.lineWidth = 1
+  overlayCtx.strokeRect(x - padding, y - padding, w + padding * 2, h + padding * 2)
+}
+
 export function createShapeFrame(
-  hitShape: ShapeBase,
+  hitShape: SceneNode,
   overlayRef: React.RefObject<HTMLCanvasElement>,
 ) {
   const overlayCanvas = overlayRef.current
@@ -127,7 +158,8 @@ export function createShapeFrame(
   const shape = hitShape
 
   if (!shape) return
-  if (shape.type === 'square') {
+
+  if (shape.type === 'rectangle') {
     const width = shape.width ?? 0
     const height = shape.height ?? 0
 
@@ -178,20 +210,55 @@ export function createShapeFrame(
   }
 
   if (shape.type === 'circle') {
-    const x = shape.coordinates.x
-    const y = shape.coordinates.y
+    const cx = shape.coordinates.x
+    const cy = shape.coordinates.y
     const radius = shape.radius ?? 0
-
-    const left = x - radius
-    const top = y - radius
+    const padding = 10
+    const handleSize = 8
     const size = radius * 2
 
-    const padding = 10
-
+    overlayCtx.save()
     overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height)
+    overlayCtx.translate(cx, cy)
+    overlayCtx.rotate(shape.rotation ?? 0)
+
     overlayCtx.strokeStyle = 'blue'
     overlayCtx.lineWidth = 1
-    overlayCtx.strokeRect(left - padding, top - padding, size + padding * 2, size + padding * 2)
+    overlayCtx.strokeRect(
+      -size / 2 - padding,
+      -size / 2 - padding,
+      size + padding * 2,
+      size + padding * 2,
+    )
+
+    const handles = [
+      { x: -size / 2 - padding, y: -size / 2 - padding },
+      { x: size / 2 + padding, y: -size / 2 - padding },
+      { x: size / 2 + padding, y: size / 2 + padding },
+      { x: -size / 2 - padding, y: size / 2 + padding },
+    ]
+
+    handles.forEach(({ x, y }) => {
+      overlayCtx.fillStyle = 'white'
+      overlayCtx.strokeStyle = 'blue'
+      overlayCtx.lineWidth = 1
+      overlayCtx.fillRect(x - handleSize / 2, y - handleSize / 2, handleSize, handleSize)
+      overlayCtx.strokeRect(x - handleSize / 2, y - handleSize / 2, handleSize, handleSize)
+    })
+
+    overlayCtx.beginPath()
+    overlayCtx.moveTo(0, -size / 2 - padding)
+    overlayCtx.lineTo(0, -size / 2 - padding - 20)
+    overlayCtx.stroke()
+
+    overlayCtx.beginPath()
+    overlayCtx.arc(0, -size / 2 - padding - 20, 5, 0, Math.PI * 2)
+    overlayCtx.fillStyle = 'white'
+    overlayCtx.fill()
+    overlayCtx.strokeStyle = 'blue'
+    overlayCtx.stroke()
+
+    overlayCtx.restore()
   }
   if (shape.type === 'triangle') {
     const x1 = shape.coordinates.x

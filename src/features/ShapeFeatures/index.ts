@@ -1,7 +1,7 @@
 import ShapeChangeType from './ui/ShapeChangeType/ShapeChangeType'
 import { getGroupBounds } from 'features/ShapeFeatures/utils/utils'
 import {
-  getShapeBounds,
+  getNodeBounds,
   createShapeFrame,
   createMultiFrame,
   isPointOnHandle,
@@ -10,7 +10,7 @@ import {
 
 export {
   ShapeChangeType,
-  getShapeBounds,
+  getNodeBounds,
   createShapeFrame,
   createMultiFrame,
   getGroupBounds,

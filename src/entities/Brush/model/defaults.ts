@@ -2,9 +2,9 @@ import { Tool } from './types'
 import { ToolType } from 'entities/Tool'
 import { DEFAULT_COLOR_BRUSH_VALUE } from 'shared/consts/consts'
 
-export const TOOL_DEFAULTS: Record<ToolType, Tool> = {
+export const TOOL_DEFAULTS: Record<ToolType, Tool<ToolType>> = {
   brush: {
-    category: 'brush',
+    category: 'drawing',
     type: 'brush',
     settings: {
       color: DEFAULT_COLOR_BRUSH_VALUE,
@@ -12,7 +12,7 @@ export const TOOL_DEFAULTS: Record<ToolType, Tool> = {
     },
   },
   spray: {
-    category: 'brush',
+    category: 'drawing',
     type: 'spray',
     settings: {
       color: DEFAULT_COLOR_BRUSH_VALUE,
@@ -28,9 +28,9 @@ export const TOOL_DEFAULTS: Record<ToolType, Tool> = {
       hardness: 20,
     },
   },
-  square: {
+  rectangle: {
     category: 'shape',
-    type: 'square',
+    type: 'rectangle',
     settings: {
       size: 1,
       color: DEFAULT_COLOR_BRUSH_VALUE,
@@ -52,9 +52,9 @@ export const TOOL_DEFAULTS: Record<ToolType, Tool> = {
       color: DEFAULT_COLOR_BRUSH_VALUE,
     },
   },
-  'fill-bucket': {
-    category: 'fill-bucket',
-    type: 'fill-bucket',
+  fillBucket: {
+    category: 'fillBucket',
+    type: 'fillBucket',
     settings: { color: DEFAULT_COLOR_BRUSH_VALUE },
   },
 }

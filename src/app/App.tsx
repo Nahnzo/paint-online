@@ -4,7 +4,7 @@ import { Brush } from 'entities/Brush'
 import { Toolbar } from 'widgets/Toolbar'
 import { ResetCanvas } from 'features/CanvasFeatures'
 import { ActiveToolCanvas } from 'widgets/ActiveToolCanvas'
-import { Shape } from 'entities/Shape'
+import { Node } from 'entities/Node'
 import { MousePointer2 } from 'lucide-react'
 import { useActionCreators } from 'shared/hooks/hooks'
 import { FillBucket } from 'entities/FillBucket'
@@ -24,7 +24,7 @@ function App() {
       <Toolbar position="top">
         <MousePointer2 onClick={() => canvasAction.setCanvasMode('select')} cursor="pointer" />
         <Brush />
-        <Shape />
+        <Node />
         <FillBucket />
         <Redo />
         <Undo />

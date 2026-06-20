@@ -39,7 +39,7 @@ export const TOOL_UI: Record<ToolType, ToolMeta> = {
     settingsComponent: <EraserSetting />,
     activeToolIcon: <EraserIcon />,
   },
-  square: {
+  rectangle: {
     changeTypeComponent: <ShapeChangeType />,
     settingsComponent: <ShapeSettings />,
     activeToolIcon: <SquareIcon />,
@@ -54,7 +54,7 @@ export const TOOL_UI: Record<ToolType, ToolMeta> = {
     settingsComponent: <TriangleSettings />,
     activeToolIcon: <TriangleIcon />,
   },
-  'fill-bucket': {
+  fillBucket: {
     settingsComponent: <FillBucketSettings />,
   },
 }

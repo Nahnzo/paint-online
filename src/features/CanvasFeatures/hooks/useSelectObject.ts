@@ -6,7 +6,7 @@ import { getSelectionBounds, isBoundsInside, isPointInsideBounds } from '../util
 
 import { getShapesSelector, getSelectedIdsSelector, sceneActions } from 'entities/Scene'
 import { getCanvasMode } from 'entities/Canvas'
-import { getShapeBounds, createShapeFrame } from 'features/ShapeFeatures'
+import { getNodeBounds, createShapeFrame } from 'features/ShapeFeatures'
 import {
   createMultiFrame,
   getGroupBounds,
@@ -49,7 +49,7 @@ export const useSelectObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
         .find((shape) =>
           isPointInsideBounds(
             point,
-            getShapeBounds(shape),
+            getNodeBounds(shape),
             shape.rotation ?? 0,
             shape.coordinates.x + (shape.width ?? 0) / 2,
             shape.coordinates.y + (shape.height ?? 0) / 2,
@@ -115,7 +115,7 @@ export const useSelectObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
       const selectionBounds = getSelectionBounds(selectionStartRef.current, point)
 
       const selectedShapes = shapes.filter((shape) =>
-        isBoundsInside(getShapeBounds(shape), selectionBounds),
+        isBoundsInside(getNodeBounds(shape), selectionBounds),
       )
 
       if (selectedShapes.length > 0) {

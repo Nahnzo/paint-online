@@ -6,7 +6,7 @@ const FillBucket = () => {
   const brushAction = useActionCreators(brushActions)
 
   const handleFillBucket = () => {
-    brushAction.setToolType('fill-bucket')
+    brushAction.setToolType('fillBucket')
   }
 
   return <PaintBucketIcon onClick={handleFillBucket} cursor="pointer" />

@@ -3,12 +3,12 @@ import { brushActions } from 'entities/Brush'
 import { PentagonIcon } from 'lucide-react'
 import { canvasActions } from 'entities/Canvas'
 
-const Shape = () => {
+const Node = () => {
   const toolActions = useActionCreators(brushActions)
   const canvasAction = useActionCreators(canvasActions)
 
   const handleCanvasMode = () => {
-    toolActions.setToolType('square')
+    toolActions.setToolType('rectangle')
     canvasAction.setCanvasMode('draw')
   }
 
@@ -19,4 +19,4 @@ const Shape = () => {
   )
 }
 
-export default Shape
+export default Node

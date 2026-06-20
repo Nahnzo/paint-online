@@ -1,16 +1,15 @@
-import { ShapeBase } from 'entities/Scene'
+import { SceneNode } from 'entities/Scene'
 import { Point, ToolStrategy } from 'entities/Tool'
-import { ToolSettings } from 'entities/Tool/model/types'
+import { ToolSettingsMap } from 'entities/Tool/model/types'
 
-export class Triangle implements ToolStrategy {
+export class CircleNode implements ToolStrategy {
   startX = 0
   startY = 0
-  width = 0
-  height = 0
+  radius = 0
 
   constructor(
-    private settings: ToolSettings,
-    private onFinishShape: (shape: ShapeBase) => void,
+    private settings: ToolSettingsMap['circle'],
+    private onFinishNode: (node: SceneNode) => void,
   ) {}
 
   onStart(_baseCtx: CanvasRenderingContext2D, _overlayCtx: CanvasRenderingContext2D, point: Point) {
@@ -21,41 +20,33 @@ export class Triangle implements ToolStrategy {
   onMove(_baseCtx: CanvasRenderingContext2D, overlayCtx: CanvasRenderingContext2D, point: Point) {
     const { color = 'white', size = 1 } = this.settings
 
-    this.width = point.x - this.startX
-    this.height = point.y - this.startY
+    const dx = point.x - this.startX
+    const dy = point.y - this.startY
+    this.radius = Math.sqrt(dx * dx + dy * dy)
+
+    overlayCtx.clearRect(0, 0, overlayCtx.canvas.width, overlayCtx.canvas.height)
 
     overlayCtx.strokeStyle = color
     overlayCtx.lineWidth = size
 
-    overlayCtx.clearRect(0, 0, overlayCtx.canvas.width, overlayCtx.canvas.height)
-
-    const x1 = this.startX
-    const y1 = this.startY
-    const x2 = this.startX + this.width
-    const y2 = this.startY + this.height
-
-    const centerX = (x1 + x2) / 2
-
     overlayCtx.beginPath()
-    overlayCtx.moveTo(centerX, y1)
-    overlayCtx.lineTo(x1, y2)
-    overlayCtx.lineTo(x2, y2)
-    overlayCtx.closePath()
+    overlayCtx.arc(this.startX, this.startY, this.radius, 0, 2 * Math.PI)
     overlayCtx.stroke()
   }
 
   onEnd(baseCtx: CanvasRenderingContext2D, overlayCtx: CanvasRenderingContext2D) {
-    if (!this.width && !this.height) {
+    if (!this.radius) {
       return
     }
     baseCtx.drawImage(overlayCtx.canvas, 0, 0)
-    this.onFinishShape({
+    overlayCtx.clearRect(0, 0, overlayCtx.canvas.width, overlayCtx.canvas.height) // 👈 добавить
+
+    this.onFinishNode({
       id: crypto.randomUUID(),
-      type: 'triangle',
+      type: 'circle',
       coordinates: { x: this.startX, y: this.startY },
-      width: this.width,
-      height: this.height,
       rotation: 0,
+      radius: this.radius,
       settings: this.settings,
     })
   }

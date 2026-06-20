@@ -1,29 +1,12 @@
-import { ToolSettings } from 'entities/Tool'
+import { ToolCategory, ToolSettingsMap, ToolType } from 'entities/Tool'
 
-export type ToolCategory = 'brush' | 'shape' | 'eraser' | 'fill-bucket'
-
-export interface ToolBase {
+export interface Tool<T extends ToolType = ToolType> {
+  type: T
   category: ToolCategory
-  settings: ToolSettings
+  settings: ToolSettingsMap[T]
 }
 
-export interface BrushTool extends ToolBase {
-  category: 'brush'
-  type: 'brush' | 'spray'
-}
-
-export interface ShapeTool extends ToolBase {
-  category: 'shape'
-  type: 'square' | 'circle' | 'triangle'
-}
-
-export interface EraserTool extends ToolBase {
-  category: 'eraser'
-  type: 'eraser'
-}
-export interface FillBucketTool extends ToolBase {
-  category: 'fill-bucket'
-  type: 'fill-bucket'
-}
-
-export type Tool = BrushTool | ShapeTool | EraserTool | FillBucketTool
+export type DrawingTool = Tool<'brush' | 'spray'>
+export type ShapeTool = Tool<'rectangle' | 'circle' | 'triangle'>
+export type EraserTool = Tool<'eraser'>
+export type FillBucketTool = Tool<'fillBucket'>

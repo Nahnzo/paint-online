@@ -16,7 +16,7 @@ export const ShapeChangeType = () => {
 
   return (
     <div className={styles.typeVariantsContainer}>
-      <div className={styles.brushIcon} onClick={() => handleChange('square')}>
+      <div className={styles.brushIcon} onClick={() => handleChange('rectangle')}>
         <SquareIcon />
       </div>
       <div className={styles.brushIcon} onClick={() => handleChange('circle')}>

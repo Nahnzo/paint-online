@@ -1,34 +1,34 @@
-import { PenBrush as Brush, SprayBrush } from 'entities/Brush'
+import { SprayBrush } from 'entities/Brush'
 import { EraserBrush as Eraser } from 'entities/Eraser'
 import { ToolStrategy } from './strategy'
-import { ToolSettings, ToolType } from './types'
-import { Square } from 'entities/Shape/shapes/Square'
-import { Circle } from 'entities/Shape/shapes/Circle'
+import { ToolSettingsMap, ToolType } from './types'
+import { CircleNode, PathNode, RectangleNode, TriangleNode } from 'entities/Node'
 import { FillBucketTool } from 'entities/FillBucket'
-import { Triangle } from 'entities/Shape/shapes/Triangle'
-import { ShapeBase } from 'entities/Scene'
+import { SceneNode } from 'entities/Scene'
+
+export type AnyToolSettings = ToolSettingsMap[keyof ToolSettingsMap]
 
 export const createTool = (
   tool: ToolType,
-  settings: ToolSettings,
-  onFinishShape: (shape: ShapeBase) => void,
+  settings: AnyToolSettings,
+  onFinishNode: (node: SceneNode) => void,
 ): ToolStrategy => {
   switch (tool) {
     case 'brush':
-      return new Brush(settings)
+      return new PathNode(settings as ToolSettingsMap['brush'], onFinishNode)
     case 'spray':
-      return new SprayBrush(settings)
+      return new SprayBrush(settings as ToolSettingsMap['spray'])
     case 'eraser':
-      return new Eraser(settings)
-    case 'square':
-      return new Square(settings, onFinishShape)
+      return new Eraser(settings as ToolSettingsMap['eraser'])
+    case 'rectangle':
+      return new RectangleNode(settings as ToolSettingsMap['rectangle'], onFinishNode)
     case 'circle':
-      return new Circle(settings, onFinishShape)
+      return new CircleNode(settings as ToolSettingsMap['circle'], onFinishNode)
     case 'triangle':
-      return new Triangle(settings, onFinishShape)
-    case 'fill-bucket':
-      return new FillBucketTool(settings)
+      return new TriangleNode(settings as ToolSettingsMap['triangle'], onFinishNode)
+    case 'fillBucket':
+      return new FillBucketTool(settings as ToolSettingsMap['fillBucket'])
     default:
-      return new Brush(settings)
+      return new PathNode(settings as ToolSettingsMap['brush'], onFinishNode)
   }
 }

@@ -2,17 +2,17 @@ import { useEffect, useRef } from 'react'
 import { useActionCreators, useAppSelector } from 'shared/hooks/hooks'
 import { sceneActions } from 'entities/Scene/model/slice'
 import { Point } from 'entities/Tool'
-import { isPointInsideBounds } from '../utils/utils'
+import { isPointInsideBounds, isPointInsideNodeBounds } from '../utils/utils'
 import { DEFAULT_BACKGROUND_CANVAS_VALUE } from 'shared/consts/consts'
-import { createShapeFrame, getShapeBounds } from 'features/ShapeFeatures'
+import { createShapeFrame, getNodeBounds } from 'features/ShapeFeatures'
 import { getGroupBounds } from 'features/ShapeFeatures'
 
 export const useDragObject = (
   baseRef: React.RefObject<HTMLCanvasElement>,
   overlayRef: React.RefObject<HTMLCanvasElement>,
 ) => {
-  const selectedIds = useAppSelector((state) => state.scene.selectedShapeIds)
-  const shapes = useAppSelector((state) => state.scene.shapes)
+  const selectedIds = useAppSelector((state) => state.scene.selectedNodesIds)
+  const shapes = useAppSelector((state) => state.scene.nodes)
   const sceneAction = useActionCreators(sceneActions)
   const sceneActionRef = useRef(sceneAction)
 
@@ -68,15 +68,7 @@ export const useDragObject = (
       snapshotRef.current = shapesRef.current
 
       const hovered = currentShapes.find(
-        (s) =>
-          currentIds.includes(s.id) &&
-          isPointInsideBounds(
-            point,
-            getShapeBounds(s),
-            s.rotation ?? 0,
-            s.coordinates.x + (s.width ?? 0) / 2,
-            s.coordinates.y + (s.height ?? 0) / 2,
-          ),
+        (s) => currentIds.includes(s.id) && isPointInsideNodeBounds(point, getNodeBounds(s), s),
       )
 
       if (!hovered && currentIds.length > 1) {

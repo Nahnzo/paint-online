@@ -1,19 +1,40 @@
-import { ToolSettings, ToolType } from 'entities/Tool'
+import { Point, ToolSettings } from 'entities/Tool'
 
-export interface ShapeBase {
+interface BaseSceneNode {
   id: string
-  type: Exclude<ToolType, 'fill-bucket' | 'eraser'>
-  coordinates: { x: number; y: number }
-  width?: number
-  height?: number
-  radius?: number
+  coordinates?: { x: number; y: number }
   rotation?: number
-  settings: ToolSettings
+  settings?: ToolSettings
+}
+
+interface RectangleNode extends BaseSceneNode {
+  type: 'rectangle'
+  width: number
+  height: number
+}
+
+interface CircleNode extends BaseSceneNode {
+  type: 'circle'
+  radius: number
+}
+
+export interface PathNode extends BaseSceneNode {
+  type: 'path'
+  points: Point[]
+  isStart: boolean
+}
+
+interface TriangleNode extends BaseSceneNode {
+  type: 'triangle'
+  width: number
+  height: number
 }
 
 export interface InitialSceneState {
-  shapes: ShapeBase[]
-  selectedShapeIds: string[]
-  pastScene: ShapeBase[][]
-  futureScene: ShapeBase[][]
+  nodes: SceneNode[]
+  selectedNodesIds: string[]
+  pastScene: SceneNode[][]
+  futureScene: SceneNode[][]
 }
+
+export type SceneNode = RectangleNode | CircleNode | PathNode | TriangleNode

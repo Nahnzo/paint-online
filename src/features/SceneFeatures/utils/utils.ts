@@ -1,38 +1,55 @@
-import { ShapeBase, getShapesSelector } from 'entities/Scene'
+import { getShapesSelector } from 'entities/Scene'
+import { SceneNode } from 'entities/Scene/model/types'
 import { useEffect } from 'react'
 import { useAppSelector } from 'shared/hooks/hooks'
 
-export function renderShapes(ctx: CanvasRenderingContext2D, shapes: ShapeBase[]) {
-  shapes.forEach((shape) => {
-    const { x, y } = shape.coordinates
-    const { color = '#000000', size = 1 } = shape.settings
+export function renderNodes(ctx: CanvasRenderingContext2D, nodes: SceneNode[]) {
+  nodes.forEach((node) => {
+    const x = node.coordinates?.x
+    const y = node.coordinates?.y
+    const color = node.settings?.color ?? '#c50d0d'
+    const size = node.settings?.size ?? 1
 
     ctx.save()
     ctx.strokeStyle = color
     ctx.fillStyle = color
     ctx.lineWidth = size
 
-    if (shape.type === 'square') {
-      const width = shape.width ?? 0
-      const height = shape.height ?? 0
-      const centerX = shape.coordinates.x + (shape.width ?? 0) / 2
-      const centerY = shape.coordinates.y + (shape.height ?? 0) / 2
+    if (node.type === 'rectangle') {
+      const width = node.width ?? 0
+      const height = node.height ?? 0
+      const centerX = node.coordinates.x + (node.width ?? 0) / 2
+      const centerY = node.coordinates.y + (node.height ?? 0) / 2
       ctx.translate(centerX, centerY)
-      ctx.rotate(shape.rotation ?? 1)
+      ctx.rotate(node.rotation ?? 1)
       ctx.strokeRect(-width / 2, -height / 2, width, height)
       ctx.restore()
     }
 
-    if (shape.type === 'circle') {
-      const radius = shape.radius ?? 0
+    if (node.type === 'circle') {
+      const radius = node.radius ?? 0
       ctx.beginPath()
       ctx.arc(x, y, radius, 0, Math.PI * 2)
       ctx.stroke()
     }
 
-    if (shape.type === 'triangle') {
-      const width = shape.width ?? 0
-      const height = shape.height ?? 0
+    if (node.type === 'path') {
+      console.log(node)
+      if (node.points && node.points.length > 1) {
+        ctx.beginPath()
+        ctx.moveTo(node.points[0].x, node.points[0].y)
+
+        for (let i = 1; i < node.points.length; i++) {
+          ctx.lineTo(node.points[i].x, node.points[i].y)
+        }
+
+        ctx.stroke()
+      }
+    }
+
+    if (node.type === 'triangle') {
+      const width = node.width ?? 0
+      const height = node.height ?? 0
       const x2 = x + width
       const y2 = y + height
       const centerX = (x + x2) / 2
@@ -50,7 +67,7 @@ export function renderShapes(ctx: CanvasRenderingContext2D, shapes: ShapeBase[])
 }
 
 export const useRenderBase = (baseRef: React.RefObject<HTMLCanvasElement>) => {
-  const shapes = useAppSelector(getShapesSelector)
+  const nodes = useAppSelector(getShapesSelector)
 
   useEffect(() => {
     const canvas = baseRef.current
@@ -61,6 +78,6 @@ export const useRenderBase = (baseRef: React.RefObject<HTMLCanvasElement>) => {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-    renderShapes(ctx, shapes)
-  }, [shapes, baseRef])
+    renderNodes(ctx, nodes)
+  }, [nodes, baseRef])
 }

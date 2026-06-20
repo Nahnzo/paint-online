@@ -2,8 +2,8 @@ export enum ToolType {
   Brush = 'brush',
   Eraser = 'eraser',
   Spray = 'spray',
-  Square = 'square',
+  Rectangle = 'rectangle',
   Circle = 'circle',
   Triangle = 'triangle',
-  FillBucket = 'fill-bucket',
+  FillBucket = 'fillBucket',
 }

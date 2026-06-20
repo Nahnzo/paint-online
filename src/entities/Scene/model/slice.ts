@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { InitialSceneState, ShapeBase } from './types'
+import { InitialSceneState, PathNode, SceneNode } from './types'
 
 const initialState: InitialSceneState = {
-  selectedShapeIds: [],
-  shapes: [],
+  selectedNodesIds: [],
+  nodes: [],
   pastScene: [],
   futureScene: [],
 }
@@ -11,17 +11,37 @@ export const sceneSlice = createSlice({
   name: 'scene',
   initialState,
   reducers: {
-    addShape(state, action: PayloadAction<ShapeBase>) {
-      state.pastScene = [...state.pastScene, [...state.shapes]]
-      state.shapes = [...state.shapes, action.payload]
+    addNode(state, action: PayloadAction<SceneNode>) {
+      state.pastScene = [...state.pastScene, [...state.nodes]]
+
+      const node = action.payload
+
+      if (node.type === 'path') {
+        const existingIndex = state.nodes.findIndex((n) => n.id === node.id)
+
+        if (existingIndex !== -1) {
+          const existingPath = state.nodes[existingIndex] as PathNode
+          const updatedPath: PathNode = {
+            ...existingPath,
+            points: [...(existingPath.points || []), ...(node.points || [])],
+            isStart: node.isStart ?? existingPath.isStart,
+          }
+          state.nodes[existingIndex] = updatedPath
+        } else {
+          state.nodes.push(node)
+        }
+      } else {
+        state.nodes.push(node)
+      }
+
       state.futureScene = []
     },
     moveSelectedShapes(state, action: PayloadAction<{ ids: string[]; dx: number; dy: number }>) {
       const { dx, dy, ids } = action.payload
-      state.shapes.forEach((shape) => {
-        if (ids.includes(shape.id)) {
-          shape.coordinates.x += dx
-          shape.coordinates.y += dy
+      state.nodes.forEach((node) => {
+        if (ids.includes(node.id)) {
+          node.coordinates.x += dx
+          node.coordinates.y += dy
         }
       })
     },
@@ -29,7 +49,8 @@ export const sceneSlice = createSlice({
       state,
       action: PayloadAction<{ id: string; dx: number; dy: number; handle: string; angle: number }>,
     ) {
-      const shape = state.shapes.find((s) => s.id === action.payload.id)
+      const shape = state.nodes.find((s) => s.id === action.payload.id)
+
       if (!shape) return
 
       const { dx, dy, handle, angle } = action.payload
@@ -63,32 +84,32 @@ export const sceneSlice = createSlice({
     undo(state) {
       if (!state.pastScene.length) return
       const previous = state.pastScene[state.pastScene.length - 1]
-      state.futureScene = [...state.futureScene, [...state.shapes]]
-      state.shapes = previous
+      state.futureScene = [...state.futureScene, [...state.nodes]]
+      state.nodes = previous
       state.pastScene = state.pastScene.slice(0, state.pastScene.length - 1)
     },
     redo(state) {
       if (!state.futureScene.length) return
       const next = state.futureScene[state.futureScene.length - 1]
 
-      state.pastScene = [...state.pastScene, [...state.shapes]]
-      state.shapes = next
+      state.pastScene = [...state.pastScene, [...state.nodes]]
+      state.nodes = next
       state.futureScene = state.futureScene.slice(0, state.futureScene.length - 1)
     },
     commitMove(state, action) {
       state.pastScene = [...state.pastScene, action.payload]
     },
     selectShape(state, action: PayloadAction<string>) {
-      state.selectedShapeIds = [action.payload]
+      state.selectedNodesIds = [action.payload]
     },
     selectMultiShape(state, action: PayloadAction<string[]>) {
-      state.selectedShapeIds = [...action.payload]
+      state.selectedNodesIds = [...action.payload]
     },
     clearSelection(state) {
-      state.selectedShapeIds = []
+      state.selectedNodesIds = []
     },
     clearShapes(state) {
-      state.shapes = []
+      state.nodes = []
     },
   },
 })

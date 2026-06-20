@@ -1,8 +1,8 @@
 import { ToolStrategy, Point } from 'entities/Tool'
-import { ToolSettings } from 'entities/Tool'
+import { ToolSettingsMap } from 'entities/Tool'
 
 export class SprayBrush implements ToolStrategy {
-  constructor(private settings: ToolSettings) {}
+  constructor(private settings: ToolSettingsMap['spray']) {}
 
   onStart() {}
 

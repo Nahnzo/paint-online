@@ -1,10 +1,10 @@
 import { Point, ToolStrategy } from 'entities/Tool'
-import { ToolSettings } from 'entities/Tool/model/types'
+import { ToolSettingsMap } from 'entities/Tool/model/types'
 
 export class Brush implements ToolStrategy {
   private lastPoint: Point | null = null
 
-  constructor(private settings: ToolSettings) {}
+  constructor(private settings: ToolSettingsMap['brush']) {}
 
   onStart(baseCtx: CanvasRenderingContext2D, _overlayCtx: CanvasRenderingContext2D, point: Point) {
     this.lastPoint = point
