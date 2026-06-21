@@ -4,7 +4,7 @@ import { sceneActions } from 'entities/Scene'
 import { ToolStrategy, Point, createTool } from 'entities/Tool'
 import { useEffect, useRef } from 'react'
 import { useActionCreators, useAppSelector } from 'shared/hooks/hooks'
-import { getShapesSelector, getSelectedIdsSelector } from 'entities/Scene'
+import { getNodesSelector, getSelectedIdsSelector } from 'entities/Scene'
 import { isPointInsideNodeBounds } from '../utils/utils'
 import { getNodeBounds, getShapeHandles, isPointOnHandle } from 'features/ShapeFeatures'
 import { createPathFrame } from 'features/ShapeFeatures/utils/utils'
@@ -17,12 +17,11 @@ export const useMouseDrawing = (
   const sceneAction = useActionCreators(sceneActions)
   const brushType = useAppSelector(getBrushType)
   const toolSettings = useAppSelector(getToolSettings)
-  console.log(toolSettings)
   const canvasMode = useAppSelector(getCanvasMode)
-  const shapes = useAppSelector(getShapesSelector)
+  const nodes = useAppSelector(getNodesSelector)
   const selectedIds = useAppSelector(getSelectedIdsSelector)
 
-  const shapesRef = useRef(shapes)
+  const shapesRef = useRef(nodes)
   const selectedIdsRef = useRef(selectedIds)
   let pathId = ''
   const pathPoints = useRef<{
@@ -33,8 +32,8 @@ export const useMouseDrawing = (
   }>({ lowestX: 0, lowestY: 0, highestX: 0, highestY: 0 })
 
   useEffect(() => {
-    shapesRef.current = shapes
-  }, [shapes])
+    shapesRef.current = nodes
+  }, [nodes])
   useEffect(() => {
     selectedIdsRef.current = selectedIds
   }, [selectedIds])
@@ -126,7 +125,9 @@ export const useMouseDrawing = (
       brush.onEnd(baseCtx, overlayCtx)
       brush = null
 
-      createPathFrame(pathPoints, overlayRef)
+      requestAnimationFrame(() => {
+        createPathFrame(pathPoints, overlayRef)
+      })
     }
 
     overlayCanvas.addEventListener('mousedown', onMouseDown)

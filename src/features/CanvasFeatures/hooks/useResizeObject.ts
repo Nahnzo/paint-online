@@ -1,4 +1,4 @@
-import { getSelectedIdsSelector, getShapesSelector, sceneActions } from 'entities/Scene'
+import { getSelectedIdsSelector, getNodesSelector, sceneActions } from 'entities/Scene'
 import { Point } from 'entities/Tool'
 import { getNodeBounds, getShapeHandles, isPointOnHandle } from 'features/ShapeFeatures'
 import { useEffect, useRef } from 'react'
@@ -7,7 +7,7 @@ import { isPointInsideBounds, isPointInsideNodeBounds } from '../utils/utils'
 
 export const useResizeObject = (overlayRef: React.RefObject<HTMLCanvasElement>) => {
   const selectedIds = useAppSelector(getSelectedIdsSelector)
-  const shapes = useAppSelector(getShapesSelector)
+  const shapes = useAppSelector(getNodesSelector)
   const sceneAction = useActionCreators(sceneActions)
 
   const activeHandleRef = useRef<string | null>(null)

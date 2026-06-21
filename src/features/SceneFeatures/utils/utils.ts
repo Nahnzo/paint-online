@@ -1,4 +1,4 @@
-import { getShapesSelector } from 'entities/Scene'
+import { getNodesSelector } from 'entities/Scene'
 import { SceneNode } from 'entities/Scene/model/types'
 import { useEffect } from 'react'
 import { useAppSelector } from 'shared/hooks/hooks'
@@ -67,7 +67,7 @@ export function renderNodes(ctx: CanvasRenderingContext2D, nodes: SceneNode[]) {
 }
 
 export const useRenderBase = (baseRef: React.RefObject<HTMLCanvasElement>) => {
-  const nodes = useAppSelector(getShapesSelector)
+  const nodes = useAppSelector(getNodesSelector)
 
   useEffect(() => {
     const canvas = baseRef.current

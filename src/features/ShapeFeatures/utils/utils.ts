@@ -143,10 +143,10 @@ export function createPathFrame(
 
   overlayCtx.save()
   overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height)
-  overlayCtx.restore()
   overlayCtx.strokeStyle = 'blue'
   overlayCtx.lineWidth = 1
   overlayCtx.strokeRect(x - padding, y - padding, w + padding * 2, h + padding * 2)
+  overlayCtx.restore()
 }
 
 export function createShapeFrame(
@@ -170,6 +170,7 @@ export function createShapeFrame(
     const handleSize = 8
     const centerX = shape.coordinates.x + (shape.width ?? 0) / 2
     const centerY = shape.coordinates.y + (shape.height ?? 0) / 2
+
     overlayCtx.save()
     overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height)
     overlayCtx.translate(centerX, centerY)

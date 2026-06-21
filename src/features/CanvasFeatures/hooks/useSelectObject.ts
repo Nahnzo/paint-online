@@ -4,7 +4,7 @@ import { useActionCreators, useAppSelector } from 'shared/hooks/hooks'
 
 import { getSelectionBounds, isBoundsInside, isPointInsideBounds } from '../utils/utils'
 
-import { getShapesSelector, getSelectedIdsSelector, sceneActions } from 'entities/Scene'
+import { getNodesSelector, getSelectedIdsSelector, sceneActions } from 'entities/Scene'
 import { getCanvasMode } from 'entities/Canvas'
 import { getNodeBounds, createShapeFrame } from 'features/ShapeFeatures'
 import {
@@ -15,7 +15,7 @@ import {
 } from 'features/ShapeFeatures/utils/utils'
 
 export const useSelectObject = (overlayRef: React.RefObject<HTMLCanvasElement>) => {
-  const shapes = useAppSelector(getShapesSelector)
+  const shapes = useAppSelector(getNodesSelector)
   const selectedIds = useAppSelector(getSelectedIdsSelector)
   const canvasMode = useAppSelector(getCanvasMode)
 
