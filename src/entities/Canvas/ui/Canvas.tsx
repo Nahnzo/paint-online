@@ -8,21 +8,17 @@ import {
   useSelectObject,
 } from 'features/CanvasFeatures'
 import { useRenderBase } from 'features/SceneFeatures'
-
-interface CanvasProps {
-  baseRef: React.RefObject<HTMLCanvasElement>
-  overlayRef: React.RefObject<HTMLCanvasElement>
-}
+import { CanvasProps } from '../model/types'
 
 const Canvas = ({ baseRef, overlayRef }: CanvasProps) => {
   const canvasBackgroundColor = useAppSelector(getCanvasBackgroundColor)
 
   useCanvasResize(baseRef)
   useCanvasResize(overlayRef)
-  useMouseDrawing(baseRef, overlayRef)
+  useMouseDrawing({ baseRef, overlayRef })
   useRenderBase(baseRef)
   useResizeObject(overlayRef)
-  useDragObject(baseRef, overlayRef)
+  useDragObject({ baseRef, overlayRef })
   useSelectObject(overlayRef)
 
   return (

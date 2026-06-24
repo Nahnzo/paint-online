@@ -1,34 +1,26 @@
 import { useEffect, useRef } from 'react'
 import { useActionCreators, useAppSelector } from 'shared/hooks/hooks'
-import { sceneActions } from 'entities/Scene/model/slice'
 import { Point } from 'entities/Tool'
-import { isPointInsideBounds, isPointInsideNodeBounds } from '../utils/utils'
+import { isPointInsideNodeBounds } from '../utils/utils'
 import { DEFAULT_BACKGROUND_CANVAS_VALUE } from 'shared/consts/consts'
-import { createShapeFrame, getNodeBounds } from 'features/ShapeFeatures'
-import { getGroupBounds } from 'features/ShapeFeatures'
+import { createNodeFrame, getNodeBounds, getGroupBounds } from 'features/ShapeFeatures'
+import { getNodesSelector, getSelectedIdsSelector, sceneActions } from 'entities/Scene'
+import { CanvasProps } from 'entities/Canvas'
 
-export const useDragObject = (
-  baseRef: React.RefObject<HTMLCanvasElement>,
-  overlayRef: React.RefObject<HTMLCanvasElement>,
-) => {
-  const selectedIds = useAppSelector((state) => state.scene.selectedNodesIds)
-  const shapes = useAppSelector((state) => state.scene.nodes)
-  const sceneAction = useActionCreators(sceneActions)
-  const sceneActionRef = useRef(sceneAction)
+export const useDragObject = ({ baseRef, overlayRef }: CanvasProps) => {
+  const selectedIds = useAppSelector(getSelectedIdsSelector)
+  const nodes = useAppSelector(getNodesSelector)
+  const { moveSelectedNodes, commitMove } = useActionCreators(sceneActions)
 
   const isDragging = useRef(false)
   const lastPoint = useRef<Point | null>(null)
-  const shapesRef = useRef(shapes)
-  const snapshotRef = useRef(shapes)
+  const nodesRef = useRef(nodes)
+  const snapshotRef = useRef(nodes)
   const selectedIdsRef = useRef(selectedIds)
 
   useEffect(() => {
-    sceneActionRef.current = sceneAction
-  }, [sceneAction])
-
-  useEffect(() => {
-    shapesRef.current = shapes
-  }, [shapes])
+    nodesRef.current = nodes
+  }, [nodes])
 
   useEffect(() => {
     selectedIdsRef.current = selectedIds
@@ -48,42 +40,35 @@ export const useDragObject = (
       return { x: e.clientX - rect.left, y: e.clientY - rect.top }
     }
 
-    const drawOverlay = (currentShapes: typeof shapes) => {
+    const drawOverlay = (currentNodes: typeof nodes) => {
       overlayCtx.clearRect(0, 0, overlay.width, overlay.height)
-      const selectedShape = currentShapes.find((s) => selectedIdsRef.current.includes(s.id))
-      if (!selectedShape) return
+      const selectedNode = currentNodes.find((s) => selectedIdsRef.current.includes(s.id))
+      if (!selectedNode) return
+      const coordinates = selectedNode.coordinates ?? { x: 0, y: 0 }
+      if ('width' in selectedNode && 'height' in selectedNode) {
+        const width = selectedNode.width ?? 1
+        const height = selectedNode.height ?? 1
+        overlayCtx.fillStyle = DEFAULT_BACKGROUND_CANVAS_VALUE
+        overlayCtx.fillRect(coordinates.x, coordinates.y, width, height)
+      }
 
-      const { x, y } = selectedShape.coordinates
-      const width = selectedShape.width ?? 1
-      const height = selectedShape.height ?? 1
-      overlayCtx.fillStyle = DEFAULT_BACKGROUND_CANVAS_VALUE
-      overlayCtx.fillRect(x, y, width, height)
-      createShapeFrame(selectedShape, overlayRef)
+      createNodeFrame(selectedNode, overlayRef)
     }
 
     const onMouseDown = (e: MouseEvent) => {
       const point = getPoint(e)
-      const currentShapes = shapesRef.current
+      const currentNodes = nodesRef.current
       const currentIds = selectedIdsRef.current
-      snapshotRef.current = shapesRef.current
+      snapshotRef.current = nodesRef.current
 
-      const hovered = currentShapes.find(
+      const hovered = currentNodes.find(
         (s) => currentIds.includes(s.id) && isPointInsideNodeBounds(point, getNodeBounds(s), s),
       )
 
       if (!hovered && currentIds.length > 1) {
-        const selectedShapes = currentShapes.filter((s) => currentIds.includes(s.id))
-        const groupBounds = getGroupBounds(selectedShapes)
-        if (
-          !isPointInsideBounds(
-            point,
-            groupBounds,
-            0,
-            (groupBounds.left + groupBounds.right) / 2,
-            (groupBounds.top + groupBounds.bottom) / 2,
-          )
-        )
-          return
+        const selectedNodes = currentNodes.filter((s) => currentIds.includes(s.id))
+        const groupBounds = getGroupBounds(selectedNodes)
+        if (!isPointInsideNodeBounds(point, groupBounds, currentNodes[0])) return
       } else if (!hovered) {
         return
       }
@@ -99,23 +84,44 @@ export const useDragObject = (
       const dx = point.x - lastPoint.current.x
       const dy = point.y - lastPoint.current.y
 
-      const updatedShapes = shapesRef.current.map((s) =>
-        selectedIdsRef.current.includes(s.id)
-          ? { ...s, coordinates: { x: s.coordinates.x + dx, y: s.coordinates.y + dy } }
-          : s,
-      )
+      // Обновляем ноды с учетом типа
+      const updatedNodes = nodesRef.current.map((s) => {
+        if (!selectedIdsRef.current.includes(s.id)) return s
 
-      sceneActionRef.current.moveSelectedShapes({ ids: selectedIdsRef.current, dx, dy })
+        // Для path - смещаем все точки
+        if (s.type === 'path') {
+          return {
+            ...s,
+            points:
+              s.points?.map((p) => ({
+                x: p.x + dx,
+                y: p.y + dy,
+              })) ?? [],
+          }
+        }
+
+        // Для rectangle, circle и других - смещаем coordinates
+        return {
+          ...s,
+          coordinates: {
+            x: (s.coordinates?.x ?? 0) + dx,
+            y: (s.coordinates?.y ?? 0) + dy,
+          },
+        }
+      })
+
+      // Вызываем экшен для перемещения
+      moveSelectedNodes({ ids: selectedIdsRef.current, dx, dy })
 
       lastPoint.current = point
-      drawOverlay(updatedShapes)
+      drawOverlay(updatedNodes)
     }
 
     const onMouseUp = () => {
       if (!isDragging.current) return
       isDragging.current = false
       lastPoint.current = null
-      sceneActionRef.current.commitMove(snapshotRef.current)
+      commitMove(snapshotRef.current)
     }
 
     overlay.addEventListener('mousedown', onMouseDown)
@@ -127,5 +133,5 @@ export const useDragObject = (
       overlay.removeEventListener('mousemove', onMouseMove)
       overlay.removeEventListener('mouseup', onMouseUp)
     }
-  }, [baseRef, overlayRef])
+  }, [baseRef, commitMove, moveSelectedNodes, overlayRef])
 }

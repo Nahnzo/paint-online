@@ -2,24 +2,25 @@ import { Point } from 'entities/Tool'
 import { useEffect, useRef } from 'react'
 import { useActionCreators, useAppSelector } from 'shared/hooks/hooks'
 
-import { getSelectionBounds, isBoundsInside, isPointInsideBounds } from '../utils/utils'
+import { getSelectionBounds, isBoundsInside, isPointInsideNodeBounds } from '../utils/utils'
 
 import { getNodesSelector, getSelectedIdsSelector, sceneActions } from 'entities/Scene'
 import { getCanvasMode } from 'entities/Canvas'
-import { getNodeBounds, createShapeFrame } from 'features/ShapeFeatures'
 import {
+  getNodeBounds,
   createMultiFrame,
+  createNodeFrame,
   getGroupBounds,
   getShapeHandles,
   isPointOnHandle,
-} from 'features/ShapeFeatures/utils/utils'
+} from 'features/ShapeFeatures'
 
 export const useSelectObject = (overlayRef: React.RefObject<HTMLCanvasElement>) => {
-  const shapes = useAppSelector(getNodesSelector)
+  const nodes = useAppSelector(getNodesSelector)
   const selectedIds = useAppSelector(getSelectedIdsSelector)
   const canvasMode = useAppSelector(getCanvasMode)
 
-  const sceneAction = useActionCreators(sceneActions)
+  const { selectMultiNode, selectNode, clearSelection } = useActionCreators(sceneActions)
 
   const selectionStartRef = useRef<Point | null>(null)
 
@@ -44,25 +45,15 @@ export const useSelectObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
     }
 
     const findHitShape = (point: Point) =>
-      [...shapes]
-        .reverse()
-        .find((shape) =>
-          isPointInsideBounds(
-            point,
-            getNodeBounds(shape),
-            shape.rotation ?? 0,
-            shape.coordinates.x + (shape.width ?? 0) / 2,
-            shape.coordinates.y + (shape.height ?? 0) / 2,
-          ),
-        )
+      [...nodes].reverse().find((node) => isPointInsideNodeBounds(point, getNodeBounds(node), node))
 
     const onMouseDown = (e: MouseEvent) => {
       if (canvasMode !== 'select') return
       const point = getPoint(e)
 
-      const currentShape = shapes.find((s) => selectedIds.includes(s.id))
-      if (currentShape) {
-        const handles = getShapeHandles(currentShape)
+      const currentNode = nodes.find((s) => selectedIds.includes(s.id))
+      if (currentNode) {
+        const handles = getShapeHandles(currentNode)
         const hitHandle = Object.values(handles).find((handle) => isPointOnHandle(point, handle))
         if (hitHandle) return
       }
@@ -70,13 +61,13 @@ export const useSelectObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
       const hitShape = findHitShape(point)
       if (hitShape) {
         if (!selectedIds.includes(hitShape.id)) {
-          sceneAction.selectShape(hitShape.id)
+          selectNode(hitShape.id)
         }
         canvas.style.cursor = 'grabbing'
         return
       }
 
-      sceneAction.clearSelection()
+      clearSelection()
       selectionStartRef.current = point
     }
 
@@ -114,14 +105,14 @@ export const useSelectObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
       const point = getPoint(e)
       const selectionBounds = getSelectionBounds(selectionStartRef.current, point)
 
-      const selectedShapes = shapes.filter((shape) =>
-        isBoundsInside(getNodeBounds(shape), selectionBounds),
+      const selectedNodes = nodes.filter((node) =>
+        isBoundsInside(getNodeBounds(node), selectionBounds),
       )
 
-      if (selectedShapes.length > 0) {
-        sceneAction.selectMultiShape(selectedShapes.map((s) => s.id))
+      if (selectedNodes.length > 0) {
+        selectMultiNode(selectedNodes.map((s) => s.id))
       } else {
-        sceneAction.clearSelection()
+        clearSelection()
       }
 
       selectionStartRef.current = null
@@ -136,7 +127,7 @@ export const useSelectObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
       canvas.removeEventListener('mousemove', onMouseMove)
       canvas.removeEventListener('mouseup', onMouseUp)
     }
-  }, [canvasMode, shapes, selectedIds, sceneAction, overlayRef])
+  }, [canvasMode, nodes, selectedIds, overlayRef, clearSelection, selectNode, selectMultiNode])
 
   useEffect(() => {
     const canvas = overlayRef.current
@@ -149,11 +140,12 @@ export const useSelectObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
     if (!selectedIds.length) return
 
     if (selectedIds.length === 1) {
-      const selectedShape = shapes.find((shape) => shape.id === selectedIds[0])
-      if (selectedShape) createShapeFrame(selectedShape, overlayRef)
+      const selectedNode = nodes.find((node) => node.id === selectedIds[0])
+      if (!selectedNode) return
+      if (selectedNode) createNodeFrame(selectedNode, overlayRef)
     } else {
-      const selectedShapes = shapes.filter((s) => selectedIds.includes(s.id))
-      const groupBounds = getGroupBounds(selectedShapes)
+      const selectedNodes = nodes.filter((s) => selectedIds.includes(s.id))
+      const groupBounds = getGroupBounds(selectedNodes)
       createMultiFrame(groupBounds, overlayRef)
     }
   })

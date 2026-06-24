@@ -7,39 +7,14 @@ export type Bounds = {
   right: number
   bottom: number
 }
-
 export function isPointInsideNodeBounds(point: Point, bounds: Bounds, node: SceneNode): boolean {
   const angle = node.rotation ?? 0
-  let centerX: number, centerY: number
+  const center = getNodeCenter(node, bounds)
 
-  switch (node.type) {
-    case 'rectangle':
-      centerX = bounds.left + (bounds.right - bounds.left) / 2
-      centerY = bounds.top + (bounds.bottom - bounds.top) / 2
-      break
-    case 'circle':
-      centerX = bounds.left + (bounds.right - bounds.left) / 2
-      centerY = bounds.top + (bounds.bottom - bounds.top) / 2
-      break
-    case 'path':
-      if (node.points.length > 1) {
-        const startPoint = node.points[0]
-        const endPoint = node.points[node.points.length - 1]
-        centerX = (startPoint.x + startPoint.x) / 2
-        centerY = (endPoint.y + endPoint.y) / 2
-      } else {
-        const startPoint = node.points[0]
-        const endPoint = node.points[node.points.length - 1]
-        centerX = startPoint.x
-        centerY = endPoint.y
-      }
-      break
-  }
-
-  const rotatedX =
-    Math.cos(-angle) * (point.x - centerX) - Math.sin(-angle) * (point.y - centerY) + centerX
-  const rotatedY =
-    Math.sin(-angle) * (point.x - centerX) + Math.cos(-angle) * (point.y - centerY) + centerY
+  const cos = Math.cos(-angle)
+  const sin = Math.sin(-angle)
+  const rotatedX = cos * (point.x - center.x) - sin * (point.y - center.y) + center.x
+  const rotatedY = sin * (point.x - center.x) + cos * (point.y - center.y) + center.y
 
   switch (node.type) {
     case 'rectangle':
@@ -51,28 +26,68 @@ export function isPointInsideNodeBounds(point: Point, bounds: Bounds, node: Scen
       )
 
     case 'circle': {
-      const radius = node.radius
-      const circleCenterX = bounds.left + radius
-      const circleCenterY = bounds.top + radius
-      const dx = rotatedX - circleCenterX
-      const dy = rotatedY - circleCenterY
+      const radius = (bounds.right - bounds.left) / 2
+      const cx = bounds.left + radius
+      const cy = bounds.top + radius
+      const dx = rotatedX - cx
+      const dy = rotatedY - cy
       return dx * dx + dy * dy <= radius * radius
     }
 
     case 'path': {
-      if (node.points.length < 1) return false
-      const distance = distanceToSegment(
-        { x: rotatedX, y: rotatedY },
-        node.points[0],
-        node.points[node.points.length - 1],
-      )
-      return distance <= 5
+      const points = node.points ?? []
+      if (points.length === 0) return false
+      if (points.length === 1) {
+        const dx = rotatedX - points[0].x
+        const dy = rotatedY - points[0].y
+        return dx * dx + dy * dy <= 25
+      }
+
+      for (let i = 0; i < points.length - 1; i++) {
+        if (distanceToSegment({ x: rotatedX, y: rotatedY }, points[i], points[i + 1]) <= 5) {
+          return true
+        }
+      }
+      return false
     }
 
     default:
       return false
   }
 }
+function getNodeCenter(node: SceneNode, bounds: Bounds): Point {
+  switch (node.type) {
+    case 'rectangle':
+    case 'circle':
+      return {
+        x: bounds.left + (bounds.right - bounds.left) / 2,
+        y: bounds.top + (bounds.bottom - bounds.top) / 2,
+      }
+
+    case 'path': {
+      const points = node.points
+      if (!points || points.length === 0) {
+        return {
+          x: bounds.left + (bounds.right - bounds.left) / 2,
+          y: bounds.top + (bounds.bottom - bounds.top) / 2,
+        }
+      }
+      const first = points[0]
+      const last = points[points.length - 1]
+      return {
+        x: (first.x + last.x) / 2,
+        y: (first.y + last.y) / 2,
+      }
+    }
+
+    default:
+      return {
+        x: bounds.left + (bounds.right - bounds.left) / 2,
+        y: bounds.top + (bounds.bottom - bounds.top) / 2,
+      }
+  }
+}
+
 function distanceToSegment(point: Point, a: Point, b: Point): number {
   const ax = point.x - a.x
   const ay = point.y - a.y
@@ -94,20 +109,6 @@ function distanceToSegment(point: Point, a: Point, b: Point): number {
   const dy = point.y - projY
 
   return Math.sqrt(dx * dx + dy * dy)
-}
-
-export function isPointInsideBounds(
-  point: Point,
-  bounds: Bounds,
-  angle: number,
-  centerX: number,
-  centerY: number,
-) {
-  const newX =
-    Math.cos(-angle) * (point.x - centerX) - Math.sin(-angle) * (point.y - centerY) + centerX
-  const newY =
-    Math.sin(-angle) * (point.x - centerX) + Math.cos(-angle) * (point.y - centerY) + centerY
-  return newX >= bounds.left && newX <= bounds.right && newY >= bounds.top && newY <= bounds.bottom
 }
 
 export function isBoundsInside(inner: Bounds, outer: Bounds): boolean {

@@ -3,23 +3,23 @@ import { Point } from 'entities/Tool'
 import { getNodeBounds, getShapeHandles, isPointOnHandle } from 'features/ShapeFeatures'
 import { useEffect, useRef } from 'react'
 import { useActionCreators, useAppSelector } from 'shared/hooks/hooks'
-import { isPointInsideBounds, isPointInsideNodeBounds } from '../utils/utils'
+import { isPointInsideNodeBounds } from '../utils/utils'
 
 export const useResizeObject = (overlayRef: React.RefObject<HTMLCanvasElement>) => {
   const selectedIds = useAppSelector(getSelectedIdsSelector)
-  const shapes = useAppSelector(getNodesSelector)
-  const sceneAction = useActionCreators(sceneActions)
+  const nodes = useAppSelector(getNodesSelector)
+  const { commitMove, resizeNode } = useActionCreators(sceneActions)
 
   const activeHandleRef = useRef<string | null>(null)
   const lastPointRef = useRef<Point | null>(null)
   const initialAngleRef = useRef<number>(0)
   const initialRotationRef = useRef<number>(0)
 
-  const snapshotRef = useRef(shapes)
+  const snapshotRef = useRef(nodes)
 
   useEffect(() => {
-    snapshotRef.current = shapes
-  }, [shapes])
+    snapshotRef.current = nodes
+  }, [nodes])
 
   useEffect(() => {
     const canvas = overlayRef.current
@@ -36,7 +36,7 @@ export const useResizeObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
     const onMouseDown = (e: MouseEvent) => {
       const point = getPoint(e)
 
-      const currentShape = shapes.find((s) => selectedIds.includes(s.id))
+      const currentShape = nodes.find((s) => selectedIds.includes(s.id))
       if (!currentShape) return
 
       const handles = getShapeHandles(currentShape)
@@ -45,7 +45,7 @@ export const useResizeObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
       )
 
       if (hitHandle) {
-        snapshotRef.current = shapes
+        snapshotRef.current = nodes
         activeHandleRef.current = hitHandle[0]
         lastPointRef.current = point
 
@@ -61,7 +61,7 @@ export const useResizeObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
     const onMouseMove = (e: MouseEvent) => {
       const point = getPoint(e)
 
-      const currentShape = shapes.find((s) => selectedIds.includes(s.id))
+      const currentShape = nodes.find((s) => selectedIds.includes(s.id))
 
       if (currentShape) {
         const handles = getShapeHandles(currentShape)
@@ -94,7 +94,7 @@ export const useResizeObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
         angleDelta = currentAngle - initialAngleRef.current + initialRotationRef.current
       }
 
-      sceneAction.resizeShape({
+      resizeNode({
         id: currentShape.id,
         dx,
         dy,
@@ -108,7 +108,7 @@ export const useResizeObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
     const onMouseUp = () => {
       if (!activeHandleRef.current || !lastPointRef.current) return
 
-      sceneAction.commitMove(snapshotRef.current)
+      commitMove(snapshotRef.current)
 
       activeHandleRef.current = null
       lastPointRef.current = null
@@ -123,5 +123,5 @@ export const useResizeObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
       document.removeEventListener('mousemove', onMouseMove)
       document.removeEventListener('mouseup', onMouseUp)
     }
-  }, [overlayRef, shapes, selectedIds, sceneAction])
+  }, [overlayRef, nodes, selectedIds, resizeNode, commitMove])
 }

@@ -34,7 +34,6 @@ export function renderNodes(ctx: CanvasRenderingContext2D, nodes: SceneNode[]) {
     }
 
     if (node.type === 'path') {
-      console.log(node)
       if (node.points && node.points.length > 1) {
         ctx.beginPath()
         ctx.moveTo(node.points[0].x, node.points[0].y)

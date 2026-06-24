@@ -36,48 +36,61 @@ export const sceneSlice = createSlice({
 
       state.futureScene = []
     },
-    moveSelectedShapes(state, action: PayloadAction<{ ids: string[]; dx: number; dy: number }>) {
+    moveSelectedNodes(state, action: PayloadAction<{ ids: string[]; dx: number; dy: number }>) {
       const { dx, dy, ids } = action.payload
+
       state.nodes.forEach((node) => {
-        if (ids.includes(node.id)) {
+        if (!ids.includes(node.id)) return
+
+        if (node.type === 'path') {
+          node.points =
+            node.points?.map((p) => ({
+              x: p.x + dx,
+              y: p.y + dy,
+            })) ?? []
+          return
+        }
+
+        if (node.coordinates) {
           node.coordinates.x += dx
           node.coordinates.y += dy
         }
       })
     },
-    resizeShape(
+    resizeNode(
       state,
       action: PayloadAction<{ id: string; dx: number; dy: number; handle: string; angle: number }>,
     ) {
-      const shape = state.nodes.find((s) => s.id === action.payload.id)
+      const node = state.nodes.find((s) => s.id === action.payload.id)
 
-      if (!shape) return
+      if (!node) return
 
       const { dx, dy, handle, angle } = action.payload
+      const coordinates = node.coordinates ?? { x: 0, y: 0 }
 
       switch (handle) {
         case 'bottomRight':
-          shape.width = (shape.width ?? 0) + dx
-          shape.height = (shape.height ?? 0) + dy
+          node.width = (node.width ?? 0) + dx
+          node.height = (node.height ?? 0) + dy
           break
         case 'topLeft':
-          shape.coordinates.x += dx
-          shape.coordinates.y += dy
-          shape.width = (shape.width ?? 0) - dx
-          shape.height = (shape.height ?? 0) - dy
+          coordinates.x += dx
+          coordinates.y += dy
+          node.width = (node.width ?? 0) - dx
+          node.height = (node.height ?? 0) - dy
           break
         case 'topRight':
-          shape.coordinates.y += dy
-          shape.width = (shape.width ?? 0) + dx
-          shape.height = (shape.height ?? 0) - dy
+          coordinates.y += dy
+          node.width = (node.width ?? 0) + dx
+          node.height = (node.height ?? 0) - dy
           break
         case 'bottomLeft':
-          shape.coordinates.x += dx
-          shape.width = (shape.width ?? 0) - dx
-          shape.height = (shape.height ?? 0) + dy
+          coordinates.x += dx
+          node.width = (node.width ?? 0) - dx
+          node.height = (node.height ?? 0) + dy
           break
         case 'rotate':
-          shape.rotation = angle
+          node.rotation = angle
           break
       }
     },
@@ -99,16 +112,16 @@ export const sceneSlice = createSlice({
     commitMove(state, action) {
       state.pastScene = [...state.pastScene, action.payload]
     },
-    selectShape(state, action: PayloadAction<string>) {
+    selectNode(state, action: PayloadAction<string>) {
       state.selectedNodesIds = [action.payload]
     },
-    selectMultiShape(state, action: PayloadAction<string[]>) {
+    selectMultiNode(state, action: PayloadAction<string[]>) {
       state.selectedNodesIds = [...action.payload]
     },
     clearSelection(state) {
       state.selectedNodesIds = []
     },
-    clearShapes(state) {
+    clearNodes(state) {
       state.nodes = []
     },
   },

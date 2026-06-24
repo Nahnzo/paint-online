@@ -1,46 +1,43 @@
-import { getBrushType, getToolSettings } from 'entities/Brush'
-import { getCanvasMode } from 'entities/Canvas/model/selectors'
-import { sceneActions } from 'entities/Scene'
-import { ToolStrategy, Point, createTool } from 'entities/Tool'
 import { useEffect, useRef } from 'react'
+import { getBrushType, getToolSettings } from 'entities/Brush'
+import { ToolStrategy, Point, createTool } from 'entities/Tool'
 import { useActionCreators, useAppSelector } from 'shared/hooks/hooks'
-import { getNodesSelector, getSelectedIdsSelector } from 'entities/Scene'
+import { getNodesSelector, getSelectedIdsSelector, sceneActions, SceneNode } from 'entities/Scene'
 import { isPointInsideNodeBounds } from '../utils/utils'
-import { getNodeBounds, getShapeHandles, isPointOnHandle } from 'features/ShapeFeatures'
-import { createPathFrame } from 'features/ShapeFeatures/utils/utils'
-import { SceneNode } from 'entities/Scene/model/types'
+import {
+  getNodeBounds,
+  getShapeHandles,
+  isPointOnHandle,
+  createNodeFrame,
+} from 'features/ShapeFeatures'
+import { CanvasProps, getCanvasMode } from 'entities/Canvas'
 
-export const useMouseDrawing = (
-  baseRef: React.RefObject<HTMLCanvasElement>,
-  overlayRef: React.RefObject<HTMLCanvasElement>,
-) => {
-  const sceneAction = useActionCreators(sceneActions)
+export const useMouseDrawing = ({ baseRef, overlayRef }: CanvasProps) => {
+  const { addNode, selectNode } = useActionCreators(sceneActions)
+
   const brushType = useAppSelector(getBrushType)
   const toolSettings = useAppSelector(getToolSettings)
   const canvasMode = useAppSelector(getCanvasMode)
   const nodes = useAppSelector(getNodesSelector)
   const selectedIds = useAppSelector(getSelectedIdsSelector)
 
-  const shapesRef = useRef(nodes)
+  let lastCreatedNode: SceneNode | null = null
+
   const selectedIdsRef = useRef(selectedIds)
-  let pathId = ''
-  const pathPoints = useRef<{
-    lowestX: number
-    lowestY: number
-    highestX: number
-    highestY: number
-  }>({ lowestX: 0, lowestY: 0, highestX: 0, highestY: 0 })
+  const nodesRef = useRef(nodes)
 
   useEffect(() => {
-    shapesRef.current = nodes
+    nodesRef.current = nodes
   }, [nodes])
+
   useEffect(() => {
     selectedIdsRef.current = selectedIds
   }, [selectedIds])
 
-  const handleFinishShape = (node: SceneNode) => {
-    sceneAction.addNode(node)
-    sceneAction.selectShape(node.id)
+  const handleFinishNode = (node: SceneNode) => {
+    lastCreatedNode = node
+    addNode(node)
+    selectNode(node.id)
   }
 
   useEffect(() => {
@@ -65,54 +62,42 @@ export const useMouseDrawing = (
       }
     }
 
-    const isOverSelectedShape = (point: Point): boolean => {
-      const currentShapes = shapesRef.current
+    const isOverSelectedNode = (point: Point): boolean => {
+      const currentNodes = nodesRef.current
       const currentIds = selectedIdsRef.current
 
-      return currentShapes.some(
+      return currentNodes.some(
         (s) => currentIds.includes(s.id) && isPointInsideNodeBounds(point, getNodeBounds(s), s),
       )
     }
 
     const onMouseDown = (e: MouseEvent) => {
       const point = getPoint(e)
-      pathPoints.current.lowestX = point.x
-      pathPoints.current.lowestY = point.y
-      pathPoints.current.highestX = point.x
-      pathPoints.current.highestY = point.y
-      pathId = crypto.randomUUID()
-      const currentShape = shapesRef.current.find((s) => selectedIdsRef.current.includes(s.id))
-      if (currentShape) {
-        const handles = getShapeHandles(currentShape)
+      const currentNode = nodesRef.current.find((s) => selectedIdsRef.current.includes(s.id))
+      if (currentNode) {
+        const handles = getShapeHandles(currentNode)
         const hitHandle = Object.values(handles).find((handle) => isPointOnHandle(point, handle))
         if (hitHandle) return
       }
 
-      const hitShape = [...shapesRef.current]
+      const hitNode = [...nodesRef.current]
         .reverse()
         .find((s) => isPointInsideNodeBounds(point, getNodeBounds(s), s))
 
-      if (hitShape) {
-        sceneAction.selectShape(hitShape.id)
+      if (hitNode) {
+        selectNode(hitNode.id)
         return
       }
 
       drawing = true
 
-      brush = createTool(brushType, toolSettings, handleFinishShape)
+      brush = createTool(brushType, toolSettings, handleFinishNode)
       brush.onStart(baseCtx, overlayCtx, point)
     }
 
     const onMouseMove = (e: MouseEvent) => {
       const point = getPoint(e)
-
-      if (drawing) {
-        pathPoints.current.highestX = Math.max(pathPoints.current.highestX, point.x)
-        pathPoints.current.highestY = Math.max(pathPoints.current.highestY, point.y)
-        pathPoints.current.lowestX = Math.min(pathPoints.current.lowestX, point.x)
-        pathPoints.current.lowestY = Math.min(pathPoints.current.lowestY, point.y)
-      }
-      overlayCanvas.style.cursor = isOverSelectedShape(point) ? 'grab' : 'crosshair'
+      overlayCanvas.style.cursor = isOverSelectedNode(point) ? 'grab' : 'crosshair'
       if (!drawing || !brush) return
       brush.onMove(baseCtx, overlayCtx, point)
     }
@@ -124,9 +109,11 @@ export const useMouseDrawing = (
       drawing = false
       brush.onEnd(baseCtx, overlayCtx)
       brush = null
+      const currentNode = lastCreatedNode
 
       requestAnimationFrame(() => {
-        createPathFrame(pathPoints, overlayRef)
+        if (currentNode) createNodeFrame(currentNode, overlayRef)
+        lastCreatedNode = null
       })
     }
 

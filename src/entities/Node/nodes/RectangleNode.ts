@@ -22,9 +22,7 @@ export class RectangleNode implements ToolStrategy {
     const { color = 'white', size = 1 } = this.settings
     this.width = point.x - this.startX
     this.height = point.y - this.startY
-
     overlayCtx.clearRect(0, 0, overlayCtx.canvas.width, overlayCtx.canvas.height)
-
     overlayCtx.strokeStyle = color
     overlayCtx.lineWidth = size
     overlayCtx.strokeRect(this.startX, this.startY, this.width, this.height)

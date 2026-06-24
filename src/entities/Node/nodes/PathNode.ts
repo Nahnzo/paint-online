@@ -54,6 +54,7 @@ export class PathNode implements ToolStrategy {
       points: this.points,
       isStart: false,
       settings: this.settings,
+      rotation: 0,
     })
   }
 }
