@@ -3,7 +3,7 @@ import { useActionCreators, useAppSelector } from 'shared/hooks/hooks'
 import { Point } from 'entities/Tool'
 import { isPointInsideNodeBounds } from '../utils/utils'
 import { DEFAULT_BACKGROUND_CANVAS_VALUE } from 'shared/consts/consts'
-import { createNodeFrame, getNodeBounds, getGroupBounds } from 'features/ShapeFeatures'
+import { createNodeFrame, getGroupBounds } from 'features/ShapeFeatures'
 import { getNodesSelector, getSelectedIdsSelector, sceneActions } from 'entities/Scene'
 import { CanvasProps } from 'entities/Canvas'
 
@@ -62,15 +62,22 @@ export const useDragObject = ({ baseRef, overlayRef }: CanvasProps) => {
       snapshotRef.current = nodesRef.current
 
       const hovered = currentNodes.find(
-        (s) => currentIds.includes(s.id) && isPointInsideNodeBounds(point, getNodeBounds(s), s),
+        (s) => currentIds.includes(s.id) && isPointInsideNodeBounds(point, s),
       )
 
-      if (!hovered && currentIds.length > 1) {
-        const selectedNodes = currentNodes.filter((s) => currentIds.includes(s.id))
-        const groupBounds = getGroupBounds(selectedNodes)
-        if (!isPointInsideNodeBounds(point, groupBounds, currentNodes[0])) return
-      } else if (!hovered) {
-        return
+      if (!hovered) {
+        if (currentIds.length > 1) {
+          const selectedNodes = currentNodes.filter((s) => currentIds.includes(s.id))
+          const groupBounds = getGroupBounds(selectedNodes)
+          const inGroup =
+            point.x >= groupBounds.left &&
+            point.x <= groupBounds.right &&
+            point.y >= groupBounds.top &&
+            point.y <= groupBounds.bottom
+          if (!inGroup) return
+        } else {
+          return
+        }
       }
 
       isDragging.current = true
@@ -84,11 +91,9 @@ export const useDragObject = ({ baseRef, overlayRef }: CanvasProps) => {
       const dx = point.x - lastPoint.current.x
       const dy = point.y - lastPoint.current.y
 
-      // Обновляем ноды с учетом типа
       const updatedNodes = nodesRef.current.map((s) => {
         if (!selectedIdsRef.current.includes(s.id)) return s
 
-        // Для path - смещаем все точки
         if (s.type === 'path') {
           return {
             ...s,
@@ -100,7 +105,6 @@ export const useDragObject = ({ baseRef, overlayRef }: CanvasProps) => {
           }
         }
 
-        // Для rectangle, circle и других - смещаем coordinates
         return {
           ...s,
           coordinates: {
@@ -110,7 +114,6 @@ export const useDragObject = ({ baseRef, overlayRef }: CanvasProps) => {
         }
       })
 
-      // Вызываем экшен для перемещения
       moveSelectedNodes({ ids: selectedIdsRef.current, dx, dy })
 
       lastPoint.current = point

@@ -39,7 +39,7 @@ export class CircleNode implements ToolStrategy {
       return
     }
     baseCtx.drawImage(overlayCtx.canvas, 0, 0)
-    overlayCtx.clearRect(0, 0, overlayCtx.canvas.width, overlayCtx.canvas.height) // 👈 добавить
+    overlayCtx.clearRect(0, 0, overlayCtx.canvas.width, overlayCtx.canvas.height)
 
     this.onFinishNode({
       id: crypto.randomUUID(),

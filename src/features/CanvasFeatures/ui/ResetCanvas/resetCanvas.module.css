@@ -1,0 +1,13 @@
+.resetBtn {
+  background-color: transparent;
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 0.5px solid hsl(from #ffffff h s l / 20%);
+  color: #ffffff;
+  cursor: pointer;
+  height: 38px;
+}
+
+.resetBtn:hover {
+  background-color: #1a1a19;
+}

@@ -9,4 +9,4 @@ export interface Tool<T extends ToolType = ToolType> {
 export type DrawingTool = Tool<'brush' | 'spray'>
 export type ShapeTool = Tool<'rectangle' | 'circle' | 'triangle'>
 export type EraserTool = Tool<'eraser'>
-export type FillBucketTool = Tool<'fillBucket'>
+export type PaintRollerTool = Tool<'paintRoller'>

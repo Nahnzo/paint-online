@@ -45,7 +45,7 @@ export const useSelectObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
     }
 
     const findHitShape = (point: Point) =>
-      [...nodes].reverse().find((node) => isPointInsideNodeBounds(point, getNodeBounds(node), node))
+      [...nodes].reverse().find((node) => isPointInsideNodeBounds(point, node))
 
     const onMouseDown = (e: MouseEvent) => {
       if (canvasMode !== 'select') return
@@ -141,6 +141,7 @@ export const useSelectObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
 
     if (selectedIds.length === 1) {
       const selectedNode = nodes.find((node) => node.id === selectedIds[0])
+
       if (!selectedNode) return
       if (selectedNode) createNodeFrame(selectedNode, overlayRef)
     } else {

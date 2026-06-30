@@ -5,5 +5,5 @@ export enum ToolType {
   Rectangle = 'rectangle',
   Circle = 'circle',
   Triangle = 'triangle',
-  FillBucket = 'fillBucket',
+  PaintRoller = 'paintRoller',
 }

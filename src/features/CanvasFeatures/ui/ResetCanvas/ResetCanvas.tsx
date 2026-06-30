@@ -1,7 +1,8 @@
 import { useActionCreators } from 'shared/hooks/hooks'
 import { DEFAULT_BACKGROUND_CANVAS_VALUE } from 'shared/consts/consts'
 import { canvasActions, CanvasProps } from 'entities/Canvas'
-import { sceneActions } from 'entities/Scene/model/slice'
+import { sceneActions } from 'entities/Scene'
+import styles from './resetCanvas.module.css'
 
 const ResetCanvas = ({ baseRef, overlayRef }: CanvasProps) => {
   const canvasColorActions = useActionCreators(canvasActions)
@@ -17,7 +18,11 @@ const ResetCanvas = ({ baseRef, overlayRef }: CanvasProps) => {
     canvasColorActions.setBackgroundColor(DEFAULT_BACKGROUND_CANVAS_VALUE)
   }
 
-  return <button onClick={resetCanvas}>Reset</button>
+  return (
+    <button onClick={resetCanvas} className={styles.resetBtn}>
+      Reset
+    </button>
+  )
 }
 
 export default ResetCanvas

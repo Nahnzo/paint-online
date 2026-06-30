@@ -1,8 +1,8 @@
 import { Point, ToolStrategy } from 'entities/Tool'
-import { ToolSettings } from 'entities/Tool/model/types'
+import { ToolSettingsMap } from 'entities/Tool/model/types'
 
-export class FillBucket implements ToolStrategy {
-  constructor(private settings: ToolSettings) {}
+export class PaintRollerTool implements ToolStrategy {
+  constructor(private settings: ToolSettingsMap['paintRoller']) {}
 
   onStart(baseCtx: CanvasRenderingContext2D, _overlayCtx: CanvasRenderingContext2D, point: Point) {
     const { width, height } = baseCtx.canvas

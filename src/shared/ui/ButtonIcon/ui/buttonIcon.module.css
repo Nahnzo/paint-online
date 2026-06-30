@@ -1,0 +1,29 @@
+.iconBtn {
+  background-color: transparent;
+  width: 38px;
+  height: 38px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  border-radius: 10px;
+  border: 0.5px solid hsl(from #ffffff h s l / 20%);
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.activeIconBtn {
+  width: 38px;
+  height: 38px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  border-radius: 10px;
+  border: 0.5px solid hsl(from #ffffff h s l / 20%);
+  color: #ffffff;
+  cursor: pointer;
+  background-color: #032042;
+}
+
+.iconBtn:hover {
+  background-color: #1a1a19;
+}

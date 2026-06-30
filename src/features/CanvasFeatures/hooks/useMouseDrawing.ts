@@ -1,27 +1,20 @@
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { getBrushType, getToolSettings } from 'entities/Brush'
 import { ToolStrategy, Point, createTool } from 'entities/Tool'
 import { useActionCreators, useAppSelector } from 'shared/hooks/hooks'
 import { getNodesSelector, getSelectedIdsSelector, sceneActions, SceneNode } from 'entities/Scene'
 import { isPointInsideNodeBounds } from '../utils/utils'
-import {
-  getNodeBounds,
-  getShapeHandles,
-  isPointOnHandle,
-  createNodeFrame,
-} from 'features/ShapeFeatures'
+import { getShapeHandles, isPointOnHandle } from 'features/ShapeFeatures'
 import { CanvasProps, getCanvasMode } from 'entities/Canvas'
 
 export const useMouseDrawing = ({ baseRef, overlayRef }: CanvasProps) => {
-  const { addNode, selectNode } = useActionCreators(sceneActions)
+  const { addNode, selectNode, clearSelection } = useActionCreators(sceneActions)
 
   const brushType = useAppSelector(getBrushType)
   const toolSettings = useAppSelector(getToolSettings)
   const canvasMode = useAppSelector(getCanvasMode)
   const nodes = useAppSelector(getNodesSelector)
   const selectedIds = useAppSelector(getSelectedIdsSelector)
-
-  let lastCreatedNode: SceneNode | null = null
 
   const selectedIdsRef = useRef(selectedIds)
   const nodesRef = useRef(nodes)
@@ -34,11 +27,17 @@ export const useMouseDrawing = ({ baseRef, overlayRef }: CanvasProps) => {
     selectedIdsRef.current = selectedIds
   }, [selectedIds])
 
-  const handleFinishNode = (node: SceneNode) => {
-    lastCreatedNode = node
-    addNode(node)
-    selectNode(node.id)
-  }
+  const handleFinishNode = useCallback(
+    (node: SceneNode) => {
+      addNode(node)
+      if (node.type !== 'path') {
+        selectNode(node.id)
+      } else {
+        clearSelection()
+      }
+    },
+    [addNode, clearSelection, selectNode],
+  )
 
   useEffect(() => {
     if (canvasMode !== 'draw') return
@@ -67,13 +66,13 @@ export const useMouseDrawing = ({ baseRef, overlayRef }: CanvasProps) => {
       const currentIds = selectedIdsRef.current
 
       return currentNodes.some(
-        (s) => currentIds.includes(s.id) && isPointInsideNodeBounds(point, getNodeBounds(s), s),
+        (node) => currentIds.includes(node.id) && isPointInsideNodeBounds(point, node),
       )
     }
 
     const onMouseDown = (e: MouseEvent) => {
       const point = getPoint(e)
-      const currentNode = nodesRef.current.find((s) => selectedIdsRef.current.includes(s.id))
+      const currentNode = nodesRef.current.find((node) => selectedIdsRef.current.includes(node.id))
       if (currentNode) {
         const handles = getShapeHandles(currentNode)
         const hitHandle = Object.values(handles).find((handle) => isPointOnHandle(point, handle))
@@ -82,7 +81,7 @@ export const useMouseDrawing = ({ baseRef, overlayRef }: CanvasProps) => {
 
       const hitNode = [...nodesRef.current]
         .reverse()
-        .find((s) => isPointInsideNodeBounds(point, getNodeBounds(s), s))
+        .find((node) => isPointInsideNodeBounds(point, node))
 
       if (hitNode) {
         selectNode(hitNode.id)
@@ -105,16 +104,9 @@ export const useMouseDrawing = ({ baseRef, overlayRef }: CanvasProps) => {
     const onMouseUp = () => {
       overlayCanvas.style.cursor = 'crosshair'
       if (!drawing || !brush) return
-
       drawing = false
       brush.onEnd(baseCtx, overlayCtx)
       brush = null
-      const currentNode = lastCreatedNode
-
-      requestAnimationFrame(() => {
-        if (currentNode) createNodeFrame(currentNode, overlayRef)
-        lastCreatedNode = null
-      })
     }
 
     overlayCanvas.addEventListener('mousedown', onMouseDown)
@@ -126,5 +118,5 @@ export const useMouseDrawing = ({ baseRef, overlayRef }: CanvasProps) => {
       overlayCanvas.removeEventListener('mousemove', onMouseMove)
       overlayCanvas.removeEventListener('mouseup', onMouseUp)
     }
-  }, [baseRef, overlayRef, brushType, toolSettings, canvasMode])
+  }, [baseRef, overlayRef, brushType, toolSettings, canvasMode, handleFinishNode, selectNode])
 }

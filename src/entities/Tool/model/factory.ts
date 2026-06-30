@@ -3,7 +3,7 @@ import { EraserBrush as Eraser } from 'entities/Eraser'
 import { ToolStrategy } from './strategy'
 import { ToolSettingsMap, ToolType } from './types'
 import { CircleNode, PathNode, RectangleNode, TriangleNode } from 'entities/Node'
-import { FillBucketTool } from 'entities/FillBucket'
+import { PaintRollerTool } from 'entities/PaintRoller'
 import { SceneNode } from 'entities/Scene'
 
 export type AnyToolSettings = ToolSettingsMap[keyof ToolSettingsMap]
@@ -26,8 +26,8 @@ export const createTool = (
       return new CircleNode(settings as ToolSettingsMap['circle'], onFinishNode)
     case 'triangle':
       return new TriangleNode(settings as ToolSettingsMap['triangle'], onFinishNode)
-    case 'fillBucket':
-      return new FillBucketTool(settings as ToolSettingsMap['fillBucket'])
+    case 'paintRoller':
+      return new PaintRollerTool(settings as ToolSettingsMap['paintRoller'])
     default:
       return new PathNode(settings as ToolSettingsMap['brush'], onFinishNode)
   }

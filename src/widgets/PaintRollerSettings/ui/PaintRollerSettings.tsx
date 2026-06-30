@@ -3,7 +3,7 @@ import { DEFAULT_COLOR_BRUSH_VALUE } from 'shared/consts/consts'
 import { useActionCreators } from 'shared/hooks/hooks'
 import { ColorPicker } from 'shared/ui/ColorPicker'
 
-const FillBucketSettings = () => {
+const PaintRollerSettings = () => {
   const colorBrushActions = useActionCreators(brushActions)
   return (
     <div>
@@ -13,4 +13,4 @@ const FillBucketSettings = () => {
   )
 }
 
-export default FillBucketSettings
+export default PaintRollerSettings

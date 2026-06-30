@@ -9,7 +9,13 @@ const Redo = () => {
   }
   return (
     <>
-      <Redo2Icon cursor="pointer" onClick={handleUndo} />
+      <Redo2Icon
+        cursor="pointer"
+        onClick={handleUndo}
+        color="#ffffff"
+        strokeWidth={1.5}
+        size={20}
+      />
     </>
   )
 }

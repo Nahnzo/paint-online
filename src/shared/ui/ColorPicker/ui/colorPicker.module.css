@@ -16,12 +16,6 @@
   border-radius: 2px;
 }
 
-.separator {
-  height: 25px;
-  margin: 2px 3px 0 3px;
-  border-left: 2px solid gray;
-}
-
 .wrapper {
   position: relative;
 }

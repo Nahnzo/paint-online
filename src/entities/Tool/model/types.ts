@@ -16,7 +16,7 @@ export interface EraserToolSettings extends BaseToolSettings {
   hardness: number
 }
 
-export interface FillBucketToolSettings {
+export interface PaintRollerToolSettings {
   color: string
   tolerance?: number
 }
@@ -28,9 +28,9 @@ export type ToolType =
   | 'rectangle'
   | 'circle'
   | 'triangle'
-  | 'fillBucket'
+  | 'paintRoller'
 
-export type ToolCategory = 'drawing' | 'shape' | 'eraser' | 'fillBucket'
+export type ToolCategory = 'drawing' | 'shape' | 'eraser' | 'paintRoller'
 
 export interface ToolSettingsMap {
   brush: ColorToolSettings
@@ -40,5 +40,5 @@ export interface ToolSettingsMap {
   circle: ColorToolSettings
   triangle: ColorToolSettings
   eraser: EraserToolSettings
-  fillBucket: FillBucketToolSettings
+  paintRoller: PaintRollerToolSettings
 }

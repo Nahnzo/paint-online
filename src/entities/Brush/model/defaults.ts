@@ -52,9 +52,9 @@ export const TOOL_DEFAULTS: Record<ToolType, Tool<ToolType>> = {
       color: DEFAULT_COLOR_BRUSH_VALUE,
     },
   },
-  fillBucket: {
-    category: 'fillBucket',
-    type: 'fillBucket',
+  paintRoller: {
+    category: 'paintRoller',
+    type: 'paintRoller',
     settings: { color: DEFAULT_COLOR_BRUSH_VALUE },
   },
 }

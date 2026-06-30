@@ -3,6 +3,7 @@ import { Pallette } from 'widgets/Pallette'
 import { Dropdown } from 'shared/ui/Dropdown'
 import { useDropdown } from 'shared/hooks/useDropdown'
 import { defaultColors } from '../model/consts'
+import { ToolbarSeparator } from 'widgets/Toolbar'
 import styles from './colorPicker.module.css'
 
 interface ColorPickerProps {
@@ -32,7 +33,7 @@ const ColorPicker = ({ defaultValue, action }: ColorPickerProps) => {
           />
         ))}
       </div>
-      <div className={styles.separator} />
+      <ToolbarSeparator />
       <div
         className={styles.activeColor}
         style={{ backgroundColor: activeColor }}

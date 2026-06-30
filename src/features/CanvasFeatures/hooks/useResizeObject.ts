@@ -14,6 +14,7 @@ export const useResizeObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
   const lastPointRef = useRef<Point | null>(null)
   const initialAngleRef = useRef<number>(0)
   const initialRotationRef = useRef<number>(0)
+  const lastAngleRef = useRef<number>(0)
 
   const snapshotRef = useRef(nodes)
 
@@ -50,10 +51,14 @@ export const useResizeObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
         lastPointRef.current = point
 
         if (hitHandle[0] === 'rotate') {
-          const centerX = currentShape.coordinates.x + (currentShape.width ?? 0) / 2
-          const centerY = currentShape.coordinates.y + (currentShape.height ?? 0) / 2
-          initialAngleRef.current = Math.atan2(point.y - centerY, point.x - centerX)
+          const bounds = getNodeBounds(currentShape)
+          const center = {
+            x: (bounds.left + bounds.right) / 2,
+            y: (bounds.top + bounds.bottom) / 2,
+          }
+          initialAngleRef.current = Math.atan2(point.y - center.y, point.x - center.x)
           initialRotationRef.current = currentShape.rotation ?? 0
+          lastAngleRef.current = initialAngleRef.current
         }
       }
     }
@@ -66,8 +71,7 @@ export const useResizeObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
       if (currentShape) {
         const handles = getShapeHandles(currentShape)
         const hitHandle = Object.values(handles).find((handle) => isPointOnHandle(point, handle))
-        const shapeBounds = getNodeBounds(currentShape)
-        const pointOnShape = isPointInsideNodeBounds(point, shapeBounds, currentShape)
+        const pointOnShape = isPointInsideNodeBounds(point, currentShape)
 
         if (hitHandle) {
           canvas.style.cursor = hitHandle.cursor
@@ -83,22 +87,25 @@ export const useResizeObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
       const dx = point.x - lastPointRef.current.x
       const dy = point.y - lastPointRef.current.y
 
-      let angleDelta: number | undefined
+      let angle = 0
 
       if (activeHandleRef.current === 'rotate') {
+        const bounds = getNodeBounds(currentShape)
+        const center = {
+          x: (bounds.left + bounds.right) / 2,
+          y: (bounds.top + bounds.bottom) / 2,
+        }
         canvas.style.cursor = 'grab'
-        const centerX = currentShape.coordinates.x + (currentShape.width ?? 0) / 2
-        const centerY = currentShape.coordinates.y + (currentShape.height ?? 0) / 2
-
-        const currentAngle = Math.atan2(point.y - centerY, point.x - centerX)
-        angleDelta = currentAngle - initialAngleRef.current + initialRotationRef.current
+        const currentAngle = Math.atan2(point.y - center.y, point.x - center.x)
+        angle = currentAngle - initialAngleRef.current + initialRotationRef.current
+        lastAngleRef.current = currentAngle
       }
 
       resizeNode({
         id: currentShape.id,
         dx,
         dy,
-        angle: activeHandleRef.current === 'rotate' ? angleDelta! : 0,
+        angle,
         handle: activeHandleRef.current,
       })
 
@@ -112,6 +119,7 @@ export const useResizeObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
 
       activeHandleRef.current = null
       lastPointRef.current = null
+      lastAngleRef.current = 0
     }
 
     document.addEventListener('mousedown', onMouseDown)

@@ -5,7 +5,6 @@ import { CircleSettings } from 'widgets/CircleSettings'
 import { EraserSetting } from 'widgets/EraserSettings'
 import { ShapeSettings } from 'widgets/ShapeSettings'
 import { SpraySetting } from 'widgets/SpraySettings'
-import { FillBucketSettings } from 'widgets/FillBucketSettings'
 import { ToolType } from './types'
 import { TriangleSettings } from 'widgets/TriangleSettings'
 import {
@@ -16,6 +15,7 @@ import {
   SquareIcon,
   TriangleIcon,
 } from 'lucide-react'
+import { PaintRollerSettings } from 'widgets/PaintRollerSettings'
 
 type ToolMeta = {
   changeTypeComponent?: React.ReactNode
@@ -54,7 +54,7 @@ export const TOOL_UI: Record<ToolType, ToolMeta> = {
     settingsComponent: <TriangleSettings />,
     activeToolIcon: <TriangleIcon />,
   },
-  fillBucket: {
-    settingsComponent: <FillBucketSettings />,
+  paintRoller: {
+    settingsComponent: <PaintRollerSettings />,
   },
 }

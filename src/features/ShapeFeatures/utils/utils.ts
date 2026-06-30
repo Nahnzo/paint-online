@@ -8,6 +8,7 @@ export function getNodeBounds(node: SceneNode): Bounds {
   const coordinates = node.coordinates ?? { x: 0, y: 0 }
   switch (node.type) {
     case 'rectangle':
+    case 'triangle':
       return {
         left: coordinates.x ?? 0,
         top: coordinates.y ?? 0,
@@ -74,7 +75,6 @@ export const isPointOnHandle = (point: Point, handle: { x: number; y: number }) 
 }
 
 export const getShapeHandles = (node: SceneNode) => {
-  // ✅ Получаем границы для ЛЮБОГО типа
   const bounds = getNodeBounds(node)
   const padding = 10
 
@@ -83,7 +83,6 @@ export const getShapeHandles = (node: SceneNode) => {
   const right = bounds.right + padding
   const bottom = bounds.bottom + padding
 
-  // ✅ Используем width и height
   const width = right - left
   const height = bottom - top
   const centerX = left + width / 2
@@ -95,13 +94,11 @@ export const getShapeHandles = (node: SceneNode) => {
     y: Math.sin(rotation) * (px - centerX) + Math.cos(rotation) * (py - centerY) + centerY,
   })
 
-  // Углы рамки
   const tl = rotate(left, top)
   const tr = rotate(right, top)
   const br = rotate(right, bottom)
   const bl = rotate(left, bottom)
 
-  // Ручка поворота (по центру сверху)
   const rot = rotate(left + width / 2, top - 20)
 
   return {
@@ -116,6 +113,7 @@ export const getShapeHandles = (node: SceneNode) => {
 export function createMultiFrame(bounds: Bounds, overlayRef: React.RefObject<HTMLCanvasElement>) {
   const overlayCanvas = overlayRef.current
   const overlayCtx = overlayCanvas.getContext('2d')!
+  const handleSize = 8
 
   const padding = 10
 
@@ -128,6 +126,20 @@ export function createMultiFrame(bounds: Bounds, overlayRef: React.RefObject<HTM
   overlayCtx.strokeStyle = 'blue'
   overlayCtx.lineWidth = 1
   overlayCtx.strokeRect(x, y, width, height)
+  const handles = [
+    { x: x, y: y },
+    { x: x + width, y: y },
+    { x: x + width, y: y + height },
+    { x: x, y: y + height },
+  ]
+
+  handles.forEach(({ x, y }) => {
+    overlayCtx.fillStyle = 'white'
+    overlayCtx.strokeStyle = 'blue'
+    overlayCtx.lineWidth = 1
+    overlayCtx.fillRect(x - handleSize / 2, y - handleSize / 2, handleSize, handleSize)
+    overlayCtx.strokeRect(x - handleSize / 2, y - handleSize / 2, handleSize, handleSize)
+  })
 }
 
 export function createNodeFrame(

@@ -1,5 +1,6 @@
 import { SceneNode } from 'entities/Scene'
 import { Point } from 'entities/Tool'
+import { getNodeBounds } from 'features/ShapeFeatures'
 
 export type Bounds = {
   left: number
@@ -7,9 +8,10 @@ export type Bounds = {
   right: number
   bottom: number
 }
-export function isPointInsideNodeBounds(point: Point, bounds: Bounds, node: SceneNode): boolean {
+export function isPointInsideNodeBounds(point: Point, node: SceneNode): boolean {
   const angle = node.rotation ?? 0
-  const center = getNodeCenter(node, bounds)
+  const center = getNodeCenter(node)
+  const bounds = getNodeBounds(node)
 
   const cos = Math.cos(-angle)
   const sin = Math.sin(-angle)
@@ -18,6 +20,7 @@ export function isPointInsideNodeBounds(point: Point, bounds: Bounds, node: Scen
 
   switch (node.type) {
     case 'rectangle':
+    case 'triangle':
       return (
         rotatedX >= bounds.left &&
         rotatedX <= bounds.right &&
@@ -55,9 +58,11 @@ export function isPointInsideNodeBounds(point: Point, bounds: Bounds, node: Scen
       return false
   }
 }
-function getNodeCenter(node: SceneNode, bounds: Bounds): Point {
+export function getNodeCenter(node: SceneNode): Point {
+  const bounds = getNodeBounds(node)
   switch (node.type) {
     case 'rectangle':
+    case 'triangle':
     case 'circle':
       return {
         x: bounds.left + (bounds.right - bounds.left) / 2,
