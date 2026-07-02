@@ -1,13 +1,7 @@
-import { SceneNode } from 'entities/Scene'
 import { Point } from 'entities/Tool'
-import { getNodeBounds } from 'features/ShapeFeatures'
+import { SceneNode, Bounds } from '../model/types'
+import { getNodeBounds } from './getNodeBounds'
 
-export type Bounds = {
-  left: number
-  top: number
-  right: number
-  bottom: number
-}
 export function isPointInsideNodeBounds(point: Point, node: SceneNode): boolean {
   const angle = node.rotation ?? 0
   const center = getNodeCenter(node)
@@ -58,6 +52,7 @@ export function isPointInsideNodeBounds(point: Point, node: SceneNode): boolean 
       return false
   }
 }
+
 export function getNodeCenter(node: SceneNode): Point {
   const bounds = getNodeBounds(node)
   switch (node.type) {
@@ -93,6 +88,15 @@ export function getNodeCenter(node: SceneNode): Point {
   }
 }
 
+export function isBoundsInside(inner: Bounds, outer: Bounds): boolean {
+  return (
+    inner.left >= outer.left &&
+    inner.right <= outer.right &&
+    inner.top >= outer.top &&
+    inner.bottom <= outer.bottom
+  )
+}
+
 function distanceToSegment(point: Point, a: Point, b: Point): number {
   const ax = point.x - a.x
   const ay = point.y - a.y
@@ -114,15 +118,6 @@ function distanceToSegment(point: Point, a: Point, b: Point): number {
   const dy = point.y - projY
 
   return Math.sqrt(dx * dx + dy * dy)
-}
-
-export function isBoundsInside(inner: Bounds, outer: Bounds): boolean {
-  return (
-    inner.left >= outer.left &&
-    inner.right <= outer.right &&
-    inner.top >= outer.top &&
-    inner.bottom <= outer.bottom
-  )
 }
 
 export const getSelectionBounds = (a: Point, b: Point): Bounds => ({

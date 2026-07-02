@@ -1,11 +1,16 @@
 import { useEffect, useRef } from 'react'
 import { useActionCreators, useAppSelector } from 'shared/hooks/hooks'
 import { Point } from 'entities/Tool'
-import { isPointInsideNodeBounds } from '../utils/utils'
 import { DEFAULT_BACKGROUND_CANVAS_VALUE } from 'shared/consts/consts'
-import { createNodeFrame, getGroupBounds } from 'features/ShapeFeatures'
-import { getNodesSelector, getSelectedIdsSelector, sceneActions } from 'entities/Scene'
+import {
+  createNodeFrame,
+  getNodesSelector,
+  getSelectedIdsSelector,
+  isPointInsideNodeBounds,
+  sceneActions,
+} from 'entities/Scene'
 import { CanvasProps } from 'entities/Canvas'
+import { getGroupBounds } from 'entities/Scene/lib/getNodeBounds'
 
 export const useDragObject = ({ baseRef, overlayRef }: CanvasProps) => {
   const selectedIds = useAppSelector(getSelectedIdsSelector)

@@ -1,10 +1,10 @@
-import { Point, ToolSettings } from 'entities/Tool'
+import { Point, ToolSettingsMap } from 'entities/Tool'
 
 interface BaseSceneNode {
   id: string
   coordinates?: { x: number; y: number }
   rotation?: number
-  settings?: ToolSettings
+  settings?: ToolSettingsMap
 }
 
 interface RectangleNode extends BaseSceneNode {
@@ -35,6 +35,13 @@ export interface InitialSceneState {
   selectedNodesIds: string[]
   pastScene: SceneNode[][]
   futureScene: SceneNode[][]
+}
+
+export type Bounds = {
+  left: number
+  top: number
+  right: number
+  bottom: number
 }
 
 export type SceneNode = RectangleNode | CircleNode | PathNode | TriangleNode

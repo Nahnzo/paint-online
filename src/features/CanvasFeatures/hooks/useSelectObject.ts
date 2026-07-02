@@ -2,18 +2,21 @@ import { Point } from 'entities/Tool'
 import { useEffect, useRef } from 'react'
 import { useActionCreators, useAppSelector } from 'shared/hooks/hooks'
 
-import { getSelectionBounds, isBoundsInside, isPointInsideNodeBounds } from '../utils/utils'
-
-import { getNodesSelector, getSelectedIdsSelector, sceneActions } from 'entities/Scene'
-import { getCanvasMode } from 'entities/Canvas'
 import {
-  getNodeBounds,
   createMultiFrame,
   createNodeFrame,
   getGroupBounds,
+  getNodeBounds,
+  getNodesSelector,
+  getSelectedIdsSelector,
+  getSelectionBounds,
   getShapeHandles,
+  isBoundsInside,
+  isPointInsideNodeBounds,
   isPointOnHandle,
-} from 'features/ShapeFeatures'
+  sceneActions,
+} from 'entities/Scene'
+import { getCanvasMode } from 'entities/Canvas'
 
 export const useSelectObject = (overlayRef: React.RefObject<HTMLCanvasElement>) => {
   const nodes = useAppSelector(getNodesSelector)

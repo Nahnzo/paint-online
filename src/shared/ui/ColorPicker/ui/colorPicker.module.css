@@ -1,19 +1,21 @@
 .colorPickerContainer {
   width: 185px;
-  height: 44px;
-  display: flex;
-}
-
-.colorsContainer {
-  display: flex;
+  align-items: center;
+  margin: 5px 0 5px 0;
+  grid-template-columns: repeat(7, 1fr);
+  display: grid;
+  gap: 4px;
 }
 
 .colorBlock {
+  cursor: pointer;
   width: 25px;
   height: 25px;
-  cursor: pointer;
-  margin: 2px;
-  border-radius: 2px;
+  border-radius: 3px;
+}
+
+.colorBlock:nth-child(5) {
+  margin-right: 5px;
 }
 
 .wrapper {
@@ -24,6 +26,5 @@
   width: 25px;
   height: 25px;
   cursor: pointer;
-  margin: 2px;
-  border-radius: 2px;
+  border-radius: 3px;
 }

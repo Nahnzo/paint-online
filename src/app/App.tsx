@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import { Canvas, canvasActions, getCanvasMode } from 'entities/Canvas'
 import { Toolbar, ToolbarSeparator } from 'widgets/Toolbar'
 import { ResetCanvas } from 'features/CanvasFeatures'
-import { ActiveToolCanvas, getCanvasToolType } from 'widgets/ActiveToolCanvas'
+import { ActiveToolCanvas } from 'widgets/ActiveToolCanvas'
 import ButtonIcon from 'shared/ui/ButtonIcon/ui/ButtonIcon'
 import {
   BrushIcon,
@@ -13,7 +13,7 @@ import {
   VectorSquareIcon,
 } from 'lucide-react'
 import { useActionCreators, useAppSelector } from 'shared/hooks/hooks'
-import { brushActions } from 'entities/Brush'
+import { brushActions, getBrushType } from 'entities/Brush'
 import { sceneActions } from 'entities/Scene'
 import './index.css'
 
@@ -24,7 +24,7 @@ function App() {
   const { setCanvasMode } = useActionCreators(canvasActions)
   const { setToolType } = useActionCreators(brushActions)
   const canvasMode = useAppSelector(getCanvasMode)
-  const toolType = useAppSelector(getCanvasToolType)
+  const toolType = useAppSelector(getBrushType)
 
   return (
     <div className="canvasContainer">

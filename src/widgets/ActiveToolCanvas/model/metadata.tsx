@@ -1,12 +1,4 @@
-import { BrushChangeType } from 'features/BrushFeatures'
-import { ShapeChangeType } from 'features/ShapeFeatures'
-import { BrushSettings } from 'widgets/BrushSettings'
-import { CircleSettings } from 'widgets/CircleSettings'
-import { EraserSetting } from 'widgets/EraserSettings'
-import { ShapeSettings } from 'widgets/ShapeSettings'
-import { SpraySetting } from 'widgets/SpraySettings'
-import { ToolType } from './types'
-import { TriangleSettings } from 'widgets/TriangleSettings'
+import { ToolMeta, ToolType } from './types'
 import {
   BrushIcon,
   CircleIcon,
@@ -15,46 +7,42 @@ import {
   SquareIcon,
   TriangleIcon,
 } from 'lucide-react'
-import { PaintRollerSettings } from 'widgets/PaintRollerSettings'
-
-type ToolMeta = {
-  changeTypeComponent?: React.ReactNode
-  settingsComponent: React.ReactNode
-  activeToolIcon?: React.ReactElement
-}
+import { ToolSettings, TOOL_SETTINGS_CONFIG } from 'widgets/ToolSettings'
+import { BRUSH_TOOL_OPTIONS, SHAPE_TOOL_OPTIONS } from 'features/ChangeToolType/model/config'
+import { ChangeToolType } from 'features/ChangeToolType'
 
 export const TOOL_UI: Record<ToolType, ToolMeta> = {
   brush: {
-    changeTypeComponent: <BrushChangeType />,
-    settingsComponent: <BrushSettings />,
+    changeTypeComponent: <ChangeToolType options={BRUSH_TOOL_OPTIONS} />,
+    settingsComponent: <ToolSettings fields={TOOL_SETTINGS_CONFIG.brush} />,
     activeToolIcon: <BrushIcon />,
   },
   spray: {
-    changeTypeComponent: <BrushChangeType />,
-    settingsComponent: <SpraySetting />,
+    changeTypeComponent: <ChangeToolType options={BRUSH_TOOL_OPTIONS} />,
+    settingsComponent: <ToolSettings fields={TOOL_SETTINGS_CONFIG.spray} />,
     activeToolIcon: <SprayCanIcon />,
   },
   eraser: {
-    changeTypeComponent: <BrushChangeType />,
-    settingsComponent: <EraserSetting />,
+    changeTypeComponent: <ChangeToolType options={BRUSH_TOOL_OPTIONS} />,
+    settingsComponent: <ToolSettings fields={TOOL_SETTINGS_CONFIG.eraser} />,
     activeToolIcon: <EraserIcon />,
   },
   rectangle: {
-    changeTypeComponent: <ShapeChangeType />,
-    settingsComponent: <ShapeSettings />,
+    changeTypeComponent: <ChangeToolType options={SHAPE_TOOL_OPTIONS} />,
+    settingsComponent: <ToolSettings fields={TOOL_SETTINGS_CONFIG.rectangle} />,
     activeToolIcon: <SquareIcon />,
   },
   circle: {
-    changeTypeComponent: <ShapeChangeType />,
-    settingsComponent: <CircleSettings />,
+    changeTypeComponent: <ChangeToolType options={SHAPE_TOOL_OPTIONS} />,
+    settingsComponent: <ToolSettings fields={TOOL_SETTINGS_CONFIG.circle} />,
     activeToolIcon: <CircleIcon />,
   },
   triangle: {
-    changeTypeComponent: <ShapeChangeType />,
-    settingsComponent: <TriangleSettings />,
+    changeTypeComponent: <ChangeToolType options={SHAPE_TOOL_OPTIONS} />,
+    settingsComponent: <ToolSettings fields={TOOL_SETTINGS_CONFIG.triangle} />,
     activeToolIcon: <TriangleIcon />,
   },
   paintRoller: {
-    settingsComponent: <PaintRollerSettings />,
+    settingsComponent: <ToolSettings fields={TOOL_SETTINGS_CONFIG.paintRoller} />,
   },
 }

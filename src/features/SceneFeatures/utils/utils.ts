@@ -1,6 +1,4 @@
-import { getNodesSelector } from 'entities/Scene'
-import { SceneNode } from 'entities/Scene/model/types'
-import { getNodeBounds } from 'features/ShapeFeatures'
+import { getNodeBounds, getNodesSelector, SceneNode } from 'entities/Scene'
 import { useEffect } from 'react'
 import { useAppSelector } from 'shared/hooks/hooks'
 

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { InitialSceneState, PathNode, SceneNode } from './types'
-import { getNodeBounds } from 'features/ShapeFeatures'
+import { getNodeBounds } from '../lib/getNodeBounds'
 
 const initialState: InitialSceneState = {
   selectedNodesIds: [],

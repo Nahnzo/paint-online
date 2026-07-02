@@ -27,7 +27,7 @@
   align-items: center;
   gap: 8px;
   top: 25px;
-  right: 45%;
+  right: 40%;
   height: 50px;
   width: 400px;
   background-color: #2c2c2a;
@@ -35,7 +35,6 @@
 }
 
 .separator {
-  height: 15px;
-  margin: 2px 3px 0 3px;
-  border-left: 2px solid gray;
+  height: 22px;
+  border-left: 1px solid gray;
 }

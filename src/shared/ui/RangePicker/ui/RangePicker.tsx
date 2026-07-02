@@ -3,7 +3,7 @@ import styles from './rangePicker.module.css'
 
 const RangePicker = ({ handler, max = 100, min = 1, value }: RangePickerProps) => {
   return (
-    <div className={styles.rangePicker}>
+    <div className={styles.rangePickerContainer}>
       <input
         step={1}
         type="range"
@@ -11,8 +11,6 @@ const RangePicker = ({ handler, max = 100, min = 1, value }: RangePickerProps) =
         min={min}
         value={value}
         onChange={(e) => handler(Number(e.target.value))}
-        className={styles.sizeChanger}
-        style={{ width: '100px' }}
       />
       <div className={styles.activeValue}>{value}</div>
     </div>

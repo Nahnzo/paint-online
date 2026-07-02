@@ -2,9 +2,15 @@ import { useCallback, useEffect, useRef } from 'react'
 import { getBrushType, getToolSettings } from 'entities/Brush'
 import { ToolStrategy, Point, createTool } from 'entities/Tool'
 import { useActionCreators, useAppSelector } from 'shared/hooks/hooks'
-import { getNodesSelector, getSelectedIdsSelector, sceneActions, SceneNode } from 'entities/Scene'
-import { isPointInsideNodeBounds } from '../utils/utils'
-import { getShapeHandles, isPointOnHandle } from 'features/ShapeFeatures'
+import {
+  getNodesSelector,
+  getSelectedIdsSelector,
+  getShapeHandles,
+  isPointInsideNodeBounds,
+  isPointOnHandle,
+  sceneActions,
+  SceneNode,
+} from 'entities/Scene'
 import { CanvasProps, getCanvasMode } from 'entities/Canvas'
 
 export const useMouseDrawing = ({ baseRef, overlayRef }: CanvasProps) => {

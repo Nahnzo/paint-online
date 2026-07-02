@@ -23,16 +23,14 @@ const ColorPicker = ({ defaultValue, action }: ColorPickerProps) => {
 
   return (
     <div className={styles.colorPickerContainer}>
-      <div className={styles.colorsContainer}>
-        {defaultColors.map((color) => (
-          <div
-            key={color}
-            style={{ backgroundColor: color }}
-            className={styles.colorBlock}
-            onClick={() => handleColor(color)}
-          />
-        ))}
-      </div>
+      {defaultColors.map((color) => (
+        <div
+          key={color}
+          style={{ backgroundColor: color }}
+          className={styles.colorBlock}
+          onClick={() => handleColor(color)}
+        />
+      ))}
       <ToolbarSeparator />
       <div
         className={styles.activeColor}

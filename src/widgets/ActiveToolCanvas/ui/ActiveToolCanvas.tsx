@@ -1,11 +1,10 @@
 import { useAppSelector } from 'shared/hooks/hooks'
-import { getCanvasToolType } from '../model/selectors'
 import { TOOL_UI } from '../model/metadata'
 import styles from './activeToolCanvas.module.css'
+import { getBrushType } from 'entities/Brush'
 
 const ActiveToolCanvas = () => {
-  const activeToolType = useAppSelector(getCanvasToolType)
-
+  const activeToolType = useAppSelector(getBrushType)
   const toolUI = TOOL_UI[activeToolType]
 
   return (
@@ -13,13 +12,10 @@ const ActiveToolCanvas = () => {
       {toolUI.changeTypeComponent && (
         <>
           <p>Type</p>
-          <div className={styles.toolsContainer}>
-            {toolUI.changeTypeComponent}
-            <div className={styles.activeType}>{toolUI.activeToolIcon}</div>
-          </div>
+          <div className={styles.toolsContainer}>{toolUI.changeTypeComponent}</div>
         </>
       )}
-      {toolUI.settingsComponent}
+      <div key={activeToolType}>{toolUI.settingsComponent}</div>
     </div>
   )
 }

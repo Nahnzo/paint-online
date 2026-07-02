@@ -3,4 +3,25 @@ import type { SceneNode } from './model/types'
 
 import { getSelectedIdsSelector, getNodesSelector } from './model/selectors'
 
-export { sceneReducer, getSelectedIdsSelector, getNodesSelector, sceneActions, SceneNode }
+import { isPointInsideNodeBounds, getSelectionBounds, isBoundsInside } from './lib/geometry'
+import { isPointOnHandle } from './lib/getShapeHandles'
+import { getShapeHandles } from './lib/getShapeHandles'
+import { createNodeFrame, createMultiFrame } from './lib/drawSelectionFrame'
+import { getNodeBounds, getGroupBounds } from './lib/getNodeBounds'
+
+export {
+  sceneReducer,
+  getSelectedIdsSelector,
+  getNodesSelector,
+  isPointInsideNodeBounds,
+  isPointOnHandle,
+  getShapeHandles,
+  createMultiFrame,
+  createNodeFrame,
+  getNodeBounds,
+  getSelectionBounds,
+  getGroupBounds,
+  isBoundsInside,
+  sceneActions,
+  SceneNode,
+}

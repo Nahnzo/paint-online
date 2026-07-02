@@ -7,3 +7,9 @@ export enum ToolType {
   Triangle = 'triangle',
   PaintRoller = 'paintRoller',
 }
+
+export type ToolMeta = {
+  changeTypeComponent?: React.ReactNode
+  settingsComponent: React.ReactNode
+  activeToolIcon?: React.ReactElement
+}

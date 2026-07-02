@@ -3,20 +3,12 @@
   flex-direction: column;
   width: 185px;
   height: auto;
+  color: #c3c2b7;
 }
 
 .toolsContainer {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-}
-
-.activeType {
-  margin-left: 10px;
-  display: flex;
-  height: 33px;
-  width: 33px;
-  justify-content: center;
-  align-items: center;
-  border: 1px solid teal;
+  margin: 5px 0 5px 0;
 }
