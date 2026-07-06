@@ -14,6 +14,7 @@ export const toolSlice = createSlice({
     },
     setSize(state, action: PayloadAction<number>) {
       if ('size' in state.settings) {
+        console.log(action.payload)
         state.settings.size = action.payload
       }
     },

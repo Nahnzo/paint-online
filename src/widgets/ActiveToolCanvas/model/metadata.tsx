@@ -4,6 +4,7 @@ import {
   CircleIcon,
   EraserIcon,
   SprayCanIcon,
+  RectangleHorizontalIcon,
   SquareIcon,
   TriangleIcon,
 } from 'lucide-react'
@@ -28,6 +29,11 @@ export const TOOL_UI: Record<ToolType, ToolMeta> = {
     activeToolIcon: <EraserIcon />,
   },
   rectangle: {
+    changeTypeComponent: <ChangeToolType options={SHAPE_TOOL_OPTIONS} />,
+    settingsComponent: <ToolSettings fields={TOOL_SETTINGS_CONFIG.rectangle} />,
+    activeToolIcon: <RectangleHorizontalIcon />,
+  },
+  square: {
     changeTypeComponent: <ChangeToolType options={SHAPE_TOOL_OPTIONS} />,
     settingsComponent: <ToolSettings fields={TOOL_SETTINGS_CONFIG.rectangle} />,
     activeToolIcon: <SquareIcon />,

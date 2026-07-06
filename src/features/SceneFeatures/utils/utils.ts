@@ -1,12 +1,11 @@
-import { getNodeBounds, getNodesSelector, SceneNode } from 'entities/Scene'
+import { getNodeBounds, getNodeSettings, getNodesSelector, SceneNode } from 'entities/Scene'
 import { useEffect } from 'react'
 import { useAppSelector } from 'shared/hooks/hooks'
 
 export function renderNodes(ctx: CanvasRenderingContext2D, nodes: SceneNode[]) {
   nodes.forEach((node) => {
     const coordinates = node.coordinates ?? { x: 0, y: 0 }
-    const color = node.settings?.color
-    const size = node.settings?.size
+    const { color, size } = getNodeSettings(node)
 
     ctx.save()
     ctx.strokeStyle = color
@@ -16,12 +15,20 @@ export function renderNodes(ctx: CanvasRenderingContext2D, nodes: SceneNode[]) {
     if (node.type === 'rectangle') {
       const width = node.width ?? 0
       const height = node.height ?? 0
-      const centerX = coordinates.x + (node.width ?? 0) / 2
-      const centerY = coordinates.y + (node.height ?? 0) / 2
+      const centerX = coordinates.x + width / 2
+      const centerY = coordinates.y + height / 2
       ctx.translate(centerX, centerY)
       ctx.rotate(node.rotation ?? 1)
       ctx.strokeRect(-width / 2, -height / 2, width, height)
-      ctx.restore()
+    }
+    if (node.type === 'square') {
+      const width = node.width ?? 0
+      const height = node.height ?? 0
+      const centerX = coordinates.x + width / 2
+      const centerY = coordinates.y + height / 2
+      ctx.translate(centerX, centerY)
+      ctx.rotate(node.rotation ?? 0)
+      ctx.strokeRect(-width / 2, -height / 2, width, height)
     }
 
     if (node.type === 'circle') {

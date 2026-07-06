@@ -27,6 +27,7 @@ export type ToolType =
   | 'eraser'
   | 'rectangle'
   | 'circle'
+  | 'square'
   | 'triangle'
   | 'paintRoller'
 
@@ -39,6 +40,7 @@ export interface ToolSettingsMap {
   rectangle: ColorToolSettings
   circle: ColorToolSettings
   triangle: ColorToolSettings
+  square: ColorToolSettings
   eraser: EraserToolSettings
   paintRoller: PaintRollerToolSettings
 }

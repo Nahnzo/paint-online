@@ -2,6 +2,7 @@ import {
   BrushIcon,
   SprayCan,
   EraserIcon,
+  SquareIcon,
   RectangleHorizontalIcon,
   CircleIcon,
   TriangleIcon,
@@ -16,6 +17,7 @@ export const BRUSH_TOOL_OPTIONS: ToolTypeOption[] = [
 
 export const SHAPE_TOOL_OPTIONS: ToolTypeOption[] = [
   { type: 'rectangle', icon: RectangleHorizontalIcon, ariaLabel: 'Rectangle-icon' },
+  { type: 'square', icon: SquareIcon, ariaLabel: 'Square-icon' },
   { type: 'circle', icon: CircleIcon, ariaLabel: 'Circle-icon' },
   { type: 'triangle', icon: TriangleIcon, ariaLabel: 'Triangle-icon' },
 ]

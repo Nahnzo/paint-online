@@ -2,14 +2,14 @@ import { SceneNode } from 'entities/Scene'
 import { Point, ToolStrategy } from 'entities/Tool'
 import { ToolSettingsMap } from 'entities/Tool/model/types'
 
-export class RectangleNode implements ToolStrategy {
+export class SquareNode implements ToolStrategy {
   startX = 0
   startY = 0
   width = 0
   height = 0
 
   constructor(
-    private settings: ToolSettingsMap['rectangle'],
+    private settings: ToolSettingsMap['square'],
     private onFinishNode: (node: SceneNode) => void,
   ) {}
 
@@ -20,8 +20,11 @@ export class RectangleNode implements ToolStrategy {
 
   onMove(_baseCtx: CanvasRenderingContext2D, overlayCtx: CanvasRenderingContext2D, point: Point) {
     const { color = 'white', size = 1 } = this.settings
-    this.width = point.x - this.startX
-    this.height = point.y - this.startY
+
+    const side = Math.max(Math.abs(point.x - this.startX), Math.abs(point.y - this.startY))
+    this.width = point.x < this.startX ? -side : side
+    this.height = point.y < this.startY ? -side : side
+
     overlayCtx.clearRect(0, 0, overlayCtx.canvas.width, overlayCtx.canvas.height)
     overlayCtx.strokeStyle = color
     overlayCtx.lineWidth = size
@@ -34,9 +37,10 @@ export class RectangleNode implements ToolStrategy {
     }
     baseCtx.drawImage(overlayCtx.canvas, 0, 0)
     overlayCtx.clearRect(0, 0, overlayCtx.canvas.width, overlayCtx.canvas.height)
+
     this.onFinishNode({
       id: crypto.randomUUID(),
-      type: 'rectangle',
+      type: 'square',
       coordinates: { x: this.startX, y: this.startY },
       width: this.width,
       height: this.height,

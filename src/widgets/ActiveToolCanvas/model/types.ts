@@ -3,6 +3,7 @@ export enum ToolType {
   Eraser = 'eraser',
   Spray = 'spray',
   Rectangle = 'rectangle',
+  Square = 'square',
   Circle = 'circle',
   Triangle = 'triangle',
   PaintRoller = 'paintRoller',

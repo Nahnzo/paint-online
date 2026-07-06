@@ -5,6 +5,7 @@ import { ToolSettingsMap, ToolType } from './types'
 import { CircleNode, PathNode, RectangleNode, TriangleNode } from 'entities/Node'
 import { PaintRollerTool } from 'entities/PaintRoller'
 import { SceneNode } from 'entities/Scene'
+import { SquareNode } from 'entities/Node/nodes/SquareNode'
 
 export type AnyToolSettings = ToolSettingsMap[keyof ToolSettingsMap]
 
@@ -22,6 +23,8 @@ export const createTool = (
       return new Eraser(settings as ToolSettingsMap['eraser'])
     case 'rectangle':
       return new RectangleNode(settings as ToolSettingsMap['rectangle'], onFinishNode)
+    case 'square':
+      return new SquareNode(settings as ToolSettingsMap['square'], onFinishNode)
     case 'circle':
       return new CircleNode(settings as ToolSettingsMap['circle'], onFinishNode)
     case 'triangle':

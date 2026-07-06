@@ -16,7 +16,7 @@ export const TOOL_DEFAULTS: Record<ToolType, Tool<ToolType>> = {
     type: 'spray',
     settings: {
       color: DEFAULT_COLOR_BRUSH_VALUE,
-      size: 10,
+      size: 1,
       density: 20,
     },
   },
@@ -24,13 +24,21 @@ export const TOOL_DEFAULTS: Record<ToolType, Tool<ToolType>> = {
     category: 'eraser',
     type: 'eraser',
     settings: {
-      size: 10,
+      size: 1,
       hardness: 20,
     },
   },
   rectangle: {
     category: 'shape',
     type: 'rectangle',
+    settings: {
+      size: 1,
+      color: DEFAULT_COLOR_BRUSH_VALUE,
+    },
+  },
+  square: {
+    category: 'shape',
+    type: 'square',
     settings: {
       size: 1,
       color: DEFAULT_COLOR_BRUSH_VALUE,

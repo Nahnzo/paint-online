@@ -8,6 +8,7 @@ import { isPointOnHandle } from './lib/getShapeHandles'
 import { getShapeHandles } from './lib/getShapeHandles'
 import { createNodeFrame, createMultiFrame } from './lib/drawSelectionFrame'
 import { getNodeBounds, getGroupBounds } from './lib/getNodeBounds'
+import { getNodeSettings } from './lib/getNodeSettings'
 
 export {
   sceneReducer,
@@ -22,6 +23,7 @@ export {
   getSelectionBounds,
   getGroupBounds,
   isBoundsInside,
+  getNodeSettings,
   sceneActions,
   SceneNode,
 }
