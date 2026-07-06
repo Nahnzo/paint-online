@@ -47,6 +47,7 @@ export const useResizeObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
       if (!currentShape) return
 
       const handles = getShapeHandles(currentShape)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const hitHandle = Object.entries(handles).find(([_, handle]) =>
         isPointOnHandle(point, handle),
       )
