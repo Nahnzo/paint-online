@@ -25,7 +25,7 @@ interface CircleNode extends BaseSceneNode {
   settings?: ToolSettingsMap['circle']
 }
 
-interface PathNode extends BaseSceneNode {
+export interface PathNode extends BaseSceneNode {
   type: 'path'
   points: Point[]
   isStart: boolean

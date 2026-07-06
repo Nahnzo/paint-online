@@ -1,8 +1,8 @@
 import { ToolStrategy, Point } from 'entities/Tool'
-import { ToolSettings } from 'entities/Tool/model/types'
+import { ToolSettingsMap } from 'entities/Tool/model/types'
 
 export class Eraser implements ToolStrategy {
-  constructor(private settings: ToolSettings) {}
+  constructor(private settings: ToolSettingsMap['eraser']) {}
 
   onMove(baseCtx: CanvasRenderingContext2D, _overlayCtx: CanvasRenderingContext2D, point: Point) {
     const { size = 1, hardness = 1 } = this.settings

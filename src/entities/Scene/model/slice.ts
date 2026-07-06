@@ -184,9 +184,9 @@ export const sceneSlice = createSlice({
             return
         }
 
-      if (node.type === 'circle') {
-        node.radius = Math.min(node.width ?? 0, node.height ?? 0) / 2
-      }
+      // if (node.type === 'circle') {
+      //   node.radius = Math.min(node.width ?? 0, node.height ?? 0) / 2
+      // }
     },
     undo(state) {
       if (!state.pastScene.length) return
