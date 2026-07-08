@@ -1,0 +1,13 @@
+.resetBtn {
+  background-color: $bg-transparent;
+  padding: $padding-sm $padding-md;
+  border: $border-color;
+  color: $color-white;
+  border-radius: 10px;
+  height: 38px;
+  cursor: pointer;
+}
+
+.resetBtn:hover {
+  background-color: $color-dark;
+}

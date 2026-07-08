@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { palletteColorsAndShades } from '../model/consts'
-import styles from './pallette.module.css'
+import styles from './pallette.module.scss'
 
 interface PalletteProps {
   handleColor: (color: string) => void

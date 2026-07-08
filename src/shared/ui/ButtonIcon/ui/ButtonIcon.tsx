@@ -1,5 +1,5 @@
 import { LucideIcon } from 'lucide-react'
-import styles from './buttonIcon.module.css'
+import styles from './buttonIcon.module.scss'
 
 interface ButtonIconProps {
   icon: LucideIcon

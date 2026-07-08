@@ -1,0 +1,19 @@
+.iconBtn {
+  @include flex-center;
+  background-color: $bg-transparent;
+  border: $border-color;
+  color: $color-white;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.activeIconBtn {
+  @extend .iconBtn;
+  background-color: $bg-color-btn;
+}
+
+.iconBtn:hover {
+  background-color: $bg-color-btn-hover;
+}

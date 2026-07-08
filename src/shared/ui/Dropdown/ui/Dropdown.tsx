@@ -1,5 +1,5 @@
 import { DropdownProps } from '../model/types'
-import styles from './dropdown.module.css'
+import styles from './dropdown.module.scss'
 
 export const Dropdown = ({ isOpen, children }: DropdownProps) => {
   if (!isOpen) return null

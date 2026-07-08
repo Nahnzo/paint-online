@@ -15,7 +15,7 @@ import {
 import { useActionCreators, useAppSelector } from 'shared/hooks/hooks'
 import { brushActions, getBrushType } from 'entities/Brush'
 import { sceneActions } from 'entities/Scene'
-import './index.css'
+import './index.scss'
 
 function App() {
   const baseRef = useRef<HTMLCanvasElement>(null)

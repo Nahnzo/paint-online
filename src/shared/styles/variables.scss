@@ -1,0 +1,38 @@
+// colors
+
+$color-white: #ffffff;
+$color-dark: #1a1a19;
+$color-gray: #c3c2b7;
+
+$bg-color: #2c2c2a;
+$bg-color-btn: #032042;
+$bg-color-btn-hover: #1a1a19;
+$bg-transparent: transparent;
+
+$border-color: 0.5px solid hsl(from $color-white h s l / 20%);
+
+// fonts
+$font-size-sm: 12px;
+$font-size-base: 14px;
+$font-size-lg: 18px;
+
+// spacing
+
+$padding-xs: 4px;
+$padding-sm: 8px;
+$padding-md: 16px;
+$padding-lg: 24px;
+$padding-xl: 32px;
+
+$gap-xs: 4px;
+$gap-sm: 10px;
+
+$margin-xs: 5px;
+
+// borders
+
+$border-radius-xs: 3px;
+$border-radius-sm: 8px;
+
+// z-index
+$z-index: 100;

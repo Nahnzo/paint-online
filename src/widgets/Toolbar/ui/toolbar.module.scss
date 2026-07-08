@@ -1,0 +1,35 @@
+.toolbar {
+  @include flex-center;
+  width: 220px;
+  background-color: $bg-color;
+  z-index: $z-index;
+  padding: $padding-xs;
+  border-radius: 0 5px 5px 0;
+}
+
+.left {
+  @include flex-start;
+  position: sticky;
+  flex-direction: column;
+  top: 300px;
+  height: 400px;
+  left: 25px;
+  border-radius: $border-radius-sm;
+}
+
+.top {
+  @include flex-center;
+  position: fixed;
+  gap: 8px;
+  top: 25px;
+  right: 40%;
+  height: 50px;
+  width: 400px;
+  background-color: $bg-color;
+  border-radius: $border-radius-sm;
+}
+
+.separator {
+  height: 22px;
+  border-left: 1px solid $color-gray;
+}

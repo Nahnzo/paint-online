@@ -1,6 +1,6 @@
 import { Portal } from 'shared/ui/Portal'
 import { ModalWindowProps } from '../model/types'
-import styles from './modalWindow.module.css'
+import styles from './modalWindow.module.scss'
 
 const ModalWindow = ({ isOpen, children }: ModalWindowProps) => {
   if (!isOpen) return null

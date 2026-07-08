@@ -1,15 +1,13 @@
 .colorsContainer {
-  display: grid;
+  @include grid-center;
   grid-template-rows: auto auto 20px;
-  justify-items: center;
-  gap: 4px;
-  padding: 4px;
+  gap: $gap-xs;
+  padding: $padding-xs;
 }
 
 .colorsGrid {
-  display: flex;
+  @include flex-center;
   flex-wrap: wrap;
-  justify-content: center;
   width: 100%;
 }
 
@@ -17,21 +15,19 @@
   width: 30px;
   height: 30px;
   margin: 3px;
-  border-radius: 2px;
+  border-radius: $border-radius-xs;
   cursor: pointer;
 }
 
 .shadesContainer {
-  display: flex;
-  justify-content: center;
+  @include flex-center;
   flex-wrap: wrap;
   width: 100%;
   min-height: 36px;
 }
 
 .inputColorContainer {
-  display: flex;
-  justify-content: center;
+  @include flex-center;
   width: 100%;
 }
 

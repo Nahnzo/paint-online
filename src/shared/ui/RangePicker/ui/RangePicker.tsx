@@ -1,5 +1,5 @@
 import { RangePickerProps } from '../model/types'
-import styles from './rangePicker.module.css'
+import styles from './rangePicker.module.scss'
 
 const RangePicker = ({ handler, max = 100, min = 1, value }: RangePickerProps) => {
   return (

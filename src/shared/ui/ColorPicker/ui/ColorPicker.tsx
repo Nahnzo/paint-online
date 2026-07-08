@@ -4,7 +4,7 @@ import { Dropdown } from 'shared/ui/Dropdown'
 import { useDropdown } from 'shared/hooks/useDropdown'
 import { defaultColors } from '../model/consts'
 import { ToolbarSeparator } from 'widgets/Toolbar'
-import styles from './colorPicker.module.css'
+import styles from './colorPicker.module.scss'
 
 interface ColorPickerProps {
   action: (color: string) => void
