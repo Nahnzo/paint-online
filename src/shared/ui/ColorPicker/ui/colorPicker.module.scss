@@ -1,21 +1,21 @@
 .colorPickerContainer {
   width: 185px;
   align-items: center;
-  margin: 5px 0 5px 0;
+  margin: $margin-xs 0 $margin-xs 0;
   grid-template-columns: repeat(7, 1fr);
   display: grid;
-  gap: 4px;
+  gap: $gap-xs;
 }
 
 .colorBlock {
   cursor: pointer;
   width: 25px;
   height: 25px;
-  border-radius: 3px;
+  border-radius: $border-radius-xs;
 }
 
 .colorBlock:nth-child(5) {
-  margin-right: 5px;
+  margin-right: $margin-xs;
 }
 
 .wrapper {
@@ -26,5 +26,5 @@
   width: 25px;
   height: 25px;
   cursor: pointer;
-  border-radius: 3px;
+  border-radius: $border-radius-xs;
 }

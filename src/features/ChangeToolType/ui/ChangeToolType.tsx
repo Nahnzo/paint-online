@@ -4,7 +4,7 @@ import { canvasActions } from 'entities/Canvas'
 import { ToolType } from 'entities/Tool'
 import { ToolTypeOption } from '../model/types'
 import ButtonIcon from 'shared/ui/ButtonIcon/ui/ButtonIcon'
-import styles from './changeToolType.module.css'
+import styles from './changeToolType.module.scss'
 
 type ChangeToolTypeProps = {
   options: ToolTypeOption[]

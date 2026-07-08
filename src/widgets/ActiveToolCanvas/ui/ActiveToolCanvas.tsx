@@ -1,6 +1,6 @@
 import { useAppSelector } from 'shared/hooks/hooks'
 import { TOOL_UI } from '../model/metadata'
-import styles from './activeToolCanvas.module.css'
+import styles from './activeToolCanvas.module.scss'
 import { getBrushType } from 'entities/Brush'
 
 const ActiveToolCanvas = () => {

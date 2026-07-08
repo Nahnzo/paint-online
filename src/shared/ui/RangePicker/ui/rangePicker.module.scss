@@ -1,0 +1,25 @@
+.rangePickerContainer {
+  @include flex-between;
+  margin: 5px 0 5px 0;
+}
+
+.activeValue {
+  @include flex-center;
+  text-align: center;
+  height: 25px;
+  width: 25px;
+  font-size: $font-size-lg;
+  border-radius: $border-radius-xs;
+}
+
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 142px;
+  height: 4px;
+  background: $color-gray;
+  border-radius: $border-radius-xs;
+  outline: none;
+  cursor: pointer;
+  accent-color: $color-gray;
+}

@@ -1,5 +1,5 @@
 import { ToolbarPosition } from '../model/types'
-import styles from './toolbar.module.css'
+import styles from './toolbar.module.scss'
 
 interface ToolbarProps {
   position?: ToolbarPosition
