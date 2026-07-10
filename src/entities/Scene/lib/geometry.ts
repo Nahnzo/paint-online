@@ -15,6 +15,7 @@ export function isPointInsideNodeBounds(point: Point, node: SceneNode): boolean 
   switch (node.type) {
     case 'rectangle':
     case 'triangle':
+    case 'square':
       return (
         rotatedX >= bounds.left &&
         rotatedX <= bounds.right &&

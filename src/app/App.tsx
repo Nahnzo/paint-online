@@ -20,11 +20,11 @@ import './index.scss'
 function App() {
   const baseRef = useRef<HTMLCanvasElement>(null)
   const overlayRef = useRef<HTMLCanvasElement>(null)
+  const canvasMode = useAppSelector(getCanvasMode)
+  const toolType = useAppSelector(getBrushType)
   const { redo, undo } = useActionCreators(sceneActions)
   const { setCanvasMode } = useActionCreators(canvasActions)
   const { setToolType } = useActionCreators(brushActions)
-  const canvasMode = useAppSelector(getCanvasMode)
-  const toolType = useAppSelector(getBrushType)
 
   return (
     <div className="canvasContainer">
@@ -38,7 +38,7 @@ function App() {
           onClick={() => {
             setCanvasMode('select')
           }}
-          ariaLabel="Mouse-pointer"
+          ariaLabel="Mouse-pointer-icon"
         />
         <ButtonIcon
           icon={BrushIcon}
@@ -62,11 +62,11 @@ function App() {
           icon={PaintRollerIcon}
           isActive={toolType === 'paintRoller'}
           onClick={() => setToolType('paintRoller')}
-          ariaLabel="Paint-roller"
+          ariaLabel="Paint-roller-icon"
         />
         <ToolbarSeparator />
-        <ButtonIcon icon={Redo2Icon} onClick={() => redo()} ariaLabel="Redo" />
-        <ButtonIcon icon={Undo2Icon} onClick={() => undo()} ariaLabel="Undo" />
+        <ButtonIcon icon={Redo2Icon} onClick={() => redo()} ariaLabel="Redo-icon" />
+        <ButtonIcon icon={Undo2Icon} onClick={() => undo()} ariaLabel="Undo-icon" />
         <ToolbarSeparator />
         <ResetCanvas baseRef={baseRef} overlayRef={overlayRef} />
       </Toolbar>

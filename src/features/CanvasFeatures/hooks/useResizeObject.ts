@@ -14,7 +14,7 @@ import { useActionCreators, useAppSelector } from 'shared/hooks/hooks'
 export const useResizeObject = (overlayRef: React.RefObject<HTMLCanvasElement>) => {
   const selectedIds = useAppSelector(getSelectedIdsSelector)
   const nodes = useAppSelector(getNodesSelector)
-  const { commitMove, resizeNode } = useActionCreators(sceneActions)
+  const { commitMove, resizeNode, rotateNode } = useActionCreators(sceneActions)
 
   const activeHandleRef = useRef<string | null>(null)
   const lastPointRef = useRef<Point | null>(null)
@@ -91,8 +91,8 @@ export const useResizeObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
 
       if (!activeHandleRef.current || !lastPointRef.current || !currentShape) return
 
-      const dx = point.x - lastPointRef.current.x
-      const dy = point.y - lastPointRef.current.y
+      // const dx = point.x - lastPointRef.current.x
+      // const dy = point.y - lastPointRef.current.y
 
       let angle = 0
 
@@ -108,11 +108,12 @@ export const useResizeObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
         lastAngleRef.current = currentAngle
       }
 
+      rotateNode({ id: currentShape.id, angle })
       resizeNode({
         id: currentShape.id,
-        dx,
-        dy,
-        angle,
+        // dx,
+        // dy,
+        // angle,
         handle: activeHandleRef.current,
       })
 

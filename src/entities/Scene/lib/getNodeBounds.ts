@@ -5,6 +5,7 @@ export function getNodeBounds(node: SceneNode): Bounds {
   switch (node.type) {
     case 'rectangle':
     case 'triangle':
+    case 'square':
       return {
         left: coordinates.x ?? 0,
         top: coordinates.y ?? 0,
