@@ -20,7 +20,6 @@ const Canvas = ({ baseRef, overlayRef }: CanvasProps) => {
   useResizeObject(overlayRef)
   useDragObject({ baseRef, overlayRef })
   useSelectObject(overlayRef)
-  console.log(1)
 
   return (
     <>
