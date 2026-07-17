@@ -18,8 +18,6 @@ function isValidPreloadedState(value: unknown): value is Partial<RootState> {
   const obj = value as Record<string, unknown>
   const keys: (keyof RootState)[] = ['brush', 'canvas', 'scene']
 
-  // допускаем частичное состояние, но каждый присутствующий ключ
-  // должен быть объектом (простая защита от совсем битых данных)
   return keys.every((key) => {
     if (!(key in obj)) return true
     return typeof obj[key] === 'object' && obj[key] !== null
