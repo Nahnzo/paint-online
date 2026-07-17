@@ -71,132 +71,145 @@ export const sceneSlice = createSlice({
       state,
       action: PayloadAction<{
         id: string
-        // dx: number
-        // dy: number
+        dx: number
+        dy: number
         handle: string
-        // angle: number
       }>,
     ) {
       const node = state.nodes.find((s) => s.id === action.payload.id)
       if (!node) return
 
-      // const { dx, dy, handle, angle } = action.payload
-      const { handle } = action.payload
+      const { dx, dy, handle } = action.payload
 
-      // if (handle === 'rotate') {
-      //   if (node.type === 'path') {
-      //     node.rotation = angle
-      //   } else {
-      //     node.rotation = angle
-      //   }
-      //   return
-      // }
+      const rotation = node.rotation ?? 0
+      const cos = Math.cos(-rotation)
+      const sin = Math.sin(-rotation)
+      const localDx = dx * cos - dy * sin
+      const localDy = dx * sin + dy * cos
 
-      // const rotation = node.rotation ?? 0
+      if (node.type === 'path') {
+        const points = node.points ?? []
+        if (points.length === 0) return
 
-      // const cos = Math.cos(-rotation)
-      // const sin = Math.sin(-rotation)
-      // const rotatedDx = dx * cos - dy * sin
-      // const rotatedDy = dx * sin + dy * cos
+        const bounds = getNodeBounds(node)
+        const center = {
+          x: (bounds.left + bounds.right) / 2,
+          y: (bounds.top + bounds.bottom) / 2,
+        }
+        const currentWidth = bounds.right - bounds.left
+        const currentHeight = bounds.bottom - bounds.top
 
-      // if (node.type === 'path') {
-      //   const points = node.points ?? []
-      //   if (points.length === 0) return
+        if (currentWidth === 0 || currentHeight === 0) return
 
-      //   const bounds = getNodeBounds(node)
-      //   const center = {
-      //     x: (bounds.left + bounds.right) / 2,
-      //     y: (bounds.top + bounds.bottom) / 2,
-      //   }
-      //   const currentWidth = bounds.right - bounds.left
-      //   const currentHeight = bounds.bottom - bounds.top
+        let newWidth = currentWidth
+        let newHeight = currentHeight
+        let localTranslateX = 0
+        let localTranslateY = 0
 
-      //   if (currentWidth === 0 || currentHeight === 0) return
+        switch (handle) {
+          case 'bottomRight':
+            newWidth = Math.max(1, currentWidth + localDx)
+            newHeight = Math.max(1, currentHeight + localDy)
+            break
+          case 'topLeft':
+            newWidth = Math.max(1, currentWidth - localDx)
+            newHeight = Math.max(1, currentHeight - localDy)
+            localTranslateX = localDx
+            localTranslateY = localDy
+            break
+          case 'topRight':
+            newWidth = Math.max(1, currentWidth + localDx)
+            newHeight = Math.max(1, currentHeight - localDy)
+            localTranslateY = localDy
+            break
+          case 'bottomLeft':
+            newWidth = Math.max(1, currentWidth - localDx)
+            newHeight = Math.max(1, currentHeight + localDy)
+            localTranslateX = localDx
+            break
+          default:
+            return
+        }
 
-      //   let newWidth = currentWidth
-      //   let newHeight = currentHeight
-      //   let translateX = 0
-      //   let translateY = 0
+        const scaleX = newWidth / currentWidth
+        const scaleY = newHeight / currentHeight
 
-      //   switch (handle) {
-      //     case 'bottomRight':
-      //       newWidth = Math.max(1, currentWidth + rotatedDx)
-      //       newHeight = Math.max(1, currentHeight + rotatedDy)
-      //       break
-      //     case 'topLeft':
-      //       newWidth = Math.max(1, currentWidth - rotatedDx)
-      //       newHeight = Math.max(1, currentHeight - rotatedDy)
-      //       translateX = rotatedDx
-      //       translateY = rotatedDy
-      //       break
-      //     case 'topRight':
-      //       newWidth = Math.max(1, currentWidth + rotatedDx)
-      //       newHeight = Math.max(1, currentHeight - rotatedDy)
-      //       translateY = rotatedDy
-      //       break
-      //     case 'bottomLeft':
-      //       newWidth = Math.max(1, currentWidth - rotatedDx)
-      //       newHeight = Math.max(1, currentHeight + rotatedDy)
-      //       translateX = rotatedDx
-      //       break
-      //     default:
-      //       return
-      //   }
+        let transformedPoints = points.map((p) => ({
+          x: (p.x - center.x) * scaleX + center.x,
+          y: (p.y - center.y) * scaleY + center.y,
+        }))
 
-      //   const scaleX = newWidth / currentWidth
-      //   const scaleY = newHeight / currentHeight
+        if (localTranslateX !== 0 || localTranslateY !== 0) {
+          transformedPoints = transformedPoints.map((p) => ({
+            x: p.x + localTranslateX,
+            y: p.y + localTranslateY,
+          }))
+        }
 
-      //   let transformedPoints = points.map((p) => ({
-      //     x: (p.x - center.x) * scaleX + center.x,
-      //     y: (p.y - center.y) * scaleY + center.y,
-      //   }))
-
-      //   if (translateX !== 0 || translateY !== 0) {
-      //     transformedPoints = transformedPoints.map((p) => ({
-      //       x: p.x + translateX,
-      //       y: p.y + translateY,
-      //     }))
-      //   }
-
-      //   node.points = transformedPoints
-      //   return
-      // }
-      if ('width' in node && 'height' in node) {
-        const worldCoord = node.coordinates
-        const nodeCenter = node.height - node.width
-        console.log(nodeCenter)
+        node.points = transformedPoints
+        return
       }
 
-      // if ('width' in node && 'height' in node)
-      //   switch (handle) {
-      //     case 'bottomRight':
-      //       node.width = Math.max(1, (node.width ?? 0) + rotatedDx)
-      //       node.height = Math.max(1, (node.height ?? 0) + rotatedDy)
-      //       break
-      //     case 'topLeft':
-      //       // coordinates.x += rotatedDx
-      //       // coordinates.y += rotatedDy
-      //       node.width = Math.max(1, (node.width ?? 0) - rotatedDx)
-      //       node.height = Math.max(1, (node.height ?? 0) - rotatedDy)
-      //       break
-      //     case 'topRight':
-      //       // coordinates.x += rotatedDx
-      //       // coordinates.y += rotatedDy
-      //       node.width = Math.max(1, (node.width ?? 0) + rotatedDx)
-      //       node.height = Math.max(1, (node.height ?? 0) + rotatedDy)
-      //       break
-      //     case 'bottomLeft':
-      //       // coordinates.x += rotatedDx
-      //       // coordinates.y += rotatedDy
-      //       node.width = Math.max(1, (node.width ?? 0) + rotatedDx)
-      //       node.height = Math.max(1, (node.height ?? 0) + rotatedDy)
-      //       break
-      //     default:
-      //       return
-      //   }
+      if ('width' in node && 'height' in node) {
+        const currentWidth = node.width ?? 0
+        const currentHeight = node.height ?? 0
+
+        let newWidth = currentWidth
+        let newHeight = currentHeight
+        let localTranslateX = 0
+        let localTranslateY = 0
+
+        switch (handle) {
+          case 'bottomRight':
+            newWidth = Math.max(1, currentWidth + localDx)
+            newHeight = Math.max(1, currentHeight + localDy)
+            break
+          case 'topLeft':
+            newWidth = Math.max(1, currentWidth - localDx)
+            newHeight = Math.max(1, currentHeight - localDy)
+            localTranslateX = localDx
+            localTranslateY = localDy
+            break
+          case 'topRight':
+            newWidth = Math.max(1, currentWidth + localDx)
+            newHeight = Math.max(1, currentHeight - localDy)
+            localTranslateY = localDy
+            break
+          case 'bottomLeft':
+            newWidth = Math.max(1, currentWidth - localDx)
+            newHeight = Math.max(1, currentHeight + localDy)
+            localTranslateX = localDx
+            break
+          default:
+            return
+        }
+
+        node.width = newWidth
+        node.height = newHeight
+
+        if (localTranslateX !== 0 || localTranslateY !== 0) {
+          const worldCos = Math.cos(rotation)
+          const worldSin = Math.sin(rotation)
+          const worldTranslateX = localTranslateX * worldCos - localTranslateY * worldSin
+          const worldTranslateY = localTranslateX * worldSin + localTranslateY * worldCos
+
+          if (node.coordinates) {
+            node.coordinates.x += worldTranslateX
+            node.coordinates.y += worldTranslateY
+          }
+        }
+        return
+      }
 
       if (node.type === 'circle') {
-        node.radius = Math.min(node.radius ?? 0) + dx
+        const avgLocalDelta = (Math.abs(localDx) + Math.abs(localDy)) / 2
+        let sign = 1
+        if (handle === 'topLeft' || handle === 'topRight' || handle === 'bottomLeft') {
+          sign = -1
+        }
+
+        const delta = sign * avgLocalDelta
+        node.radius = Math.max(1, (node.radius ?? 0) + delta)
       }
     },
     undo(state) {

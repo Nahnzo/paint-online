@@ -14,7 +14,6 @@ export const ChangeToolType = ({ options }: ChangeToolTypeProps) => {
   const brushTypeActions = useActionCreators(brushActions)
   const canvasAction = useActionCreators(canvasActions)
   const toolType = useAppSelector(getBrushType)
-  console.log(toolType)
 
   const handleChange = (type: ToolType) => {
     brushTypeActions.setToolType(type)

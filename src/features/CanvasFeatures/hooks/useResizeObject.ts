@@ -42,7 +42,6 @@ export const useResizeObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
 
     const onMouseDown = (e: MouseEvent) => {
       const point = getPoint(e)
-
       const currentShape = nodes.find((s) => selectedIds.includes(s.id))
       if (!currentShape) return
 
@@ -66,13 +65,14 @@ export const useResizeObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
           initialAngleRef.current = Math.atan2(point.y - center.y, point.x - center.x)
           initialRotationRef.current = currentShape.rotation ?? 0
           lastAngleRef.current = initialAngleRef.current
+        } else {
+          lastAngleRef.current = currentShape.rotation ?? 0
         }
       }
     }
 
     const onMouseMove = (e: MouseEvent) => {
       const point = getPoint(e)
-
       const currentShape = nodes.find((s) => selectedIds.includes(s.id))
 
       if (currentShape) {
@@ -91,8 +91,8 @@ export const useResizeObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
 
       if (!activeHandleRef.current || !lastPointRef.current || !currentShape) return
 
-      // const dx = point.x - lastPointRef.current.x
-      // const dy = point.y - lastPointRef.current.y
+      const dx = point.x - lastPointRef.current.x
+      const dy = point.y - lastPointRef.current.y
 
       let angle = 0
 
@@ -105,15 +105,17 @@ export const useResizeObject = (overlayRef: React.RefObject<HTMLCanvasElement>) 
         canvas.style.cursor = 'grab'
         const currentAngle = Math.atan2(point.y - center.y, point.x - center.x)
         angle = currentAngle - initialAngleRef.current + initialRotationRef.current
-        lastAngleRef.current = currentAngle
+        lastAngleRef.current = angle
       }
 
-      rotateNode({ id: currentShape.id, angle })
+      if (activeHandleRef.current === 'rotate') {
+        rotateNode({ id: currentShape.id, angle })
+      }
+
       resizeNode({
         id: currentShape.id,
-        // dx,
-        // dy,
-        // angle,
+        dx,
+        dy,
         handle: activeHandleRef.current,
       })
 
