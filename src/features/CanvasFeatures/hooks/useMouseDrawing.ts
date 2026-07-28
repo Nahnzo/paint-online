@@ -41,7 +41,9 @@ export const useMouseDrawing = ({ baseRef, overlayRef }: CanvasProps) => {
       } else {
         clearSelection()
       }
+      console.log(node)
     },
+
     [addNode, clearSelection, selectNode],
   )
 

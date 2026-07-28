@@ -1,5 +1,5 @@
 export type ToolSettingsField =
-  | { kind: 'color'; label: string; defaultValue: string }
+  | { kind: 'color'; label: string; defaultValue: string; backgroundColor?: string }
   | {
       kind: 'range'
       label: string

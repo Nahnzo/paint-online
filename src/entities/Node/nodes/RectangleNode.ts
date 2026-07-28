@@ -19,21 +19,26 @@ export class RectangleNode implements ToolStrategy {
   }
 
   onMove(_baseCtx: CanvasRenderingContext2D, overlayCtx: CanvasRenderingContext2D, point: Point) {
-    const { color = 'white', size = 1 } = this.settings
+    const { color = 'white', size = 1, backgroundColor = 'transparent' } = this.settings
     this.width = point.x - this.startX
     this.height = point.y - this.startY
+
     overlayCtx.clearRect(0, 0, overlayCtx.canvas.width, overlayCtx.canvas.height)
+
+    overlayCtx.fillStyle = backgroundColor
+    overlayCtx.fillRect(this.startX, this.startY, this.width, this.height)
+
     overlayCtx.strokeStyle = color
     overlayCtx.lineWidth = size
     overlayCtx.strokeRect(this.startX, this.startY, this.width, this.height)
   }
 
   onEnd(baseCtx: CanvasRenderingContext2D, overlayCtx: CanvasRenderingContext2D) {
-    if (!this.width && !this.height) {
-      return
-    }
+    if (!this.width && !this.height) return
+
     baseCtx.drawImage(overlayCtx.canvas, 0, 0)
     overlayCtx.clearRect(0, 0, overlayCtx.canvas.width, overlayCtx.canvas.height)
+
     this.onFinishNode({
       id: crypto.randomUUID(),
       type: 'rectangle',

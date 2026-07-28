@@ -12,7 +12,7 @@ import {
 import { CanvasProps } from 'entities/Canvas'
 import { getGroupBounds } from 'entities/Scene/lib/getNodeBounds'
 
-export const useDragObject = ({ baseRef, overlayRef }: CanvasProps) => {
+export const useDragNode = ({ baseRef, overlayRef }: CanvasProps) => {
   const selectedIds = useAppSelector(getSelectedIdsSelector)
   const nodes = useAppSelector(getNodesSelector)
   const { moveSelectedNodes, commitMove } = useActionCreators(sceneActions)
@@ -56,7 +56,6 @@ export const useDragObject = ({ baseRef, overlayRef }: CanvasProps) => {
         overlayCtx.fillStyle = DEFAULT_BACKGROUND_CANVAS_VALUE
         overlayCtx.fillRect(coordinates.x, coordinates.y, width, height)
       }
-
       createNodeFrame(selectedNode, overlayRef)
     }
 
@@ -126,20 +125,19 @@ export const useDragObject = ({ baseRef, overlayRef }: CanvasProps) => {
     }
 
     const onMouseUp = () => {
-      if (!isDragging.current) return
       isDragging.current = false
       lastPoint.current = null
       commitMove(snapshotRef.current)
     }
 
     overlay.addEventListener('mousedown', onMouseDown)
-    overlay.addEventListener('mousemove', onMouseMove)
-    overlay.addEventListener('mouseup', onMouseUp)
+    document.addEventListener('mousemove', onMouseMove)
+    document.addEventListener('mouseup', onMouseUp)
 
     return () => {
       overlay.removeEventListener('mousedown', onMouseDown)
-      overlay.removeEventListener('mousemove', onMouseMove)
-      overlay.removeEventListener('mouseup', onMouseUp)
+      document.removeEventListener('mousemove', onMouseMove)
+      document.removeEventListener('mouseup', onMouseUp)
     }
   }, [baseRef, commitMove, moveSelectedNodes, overlayRef])
 }

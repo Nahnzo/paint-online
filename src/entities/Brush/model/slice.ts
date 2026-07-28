@@ -23,6 +23,11 @@ export const toolSlice = createSlice({
         state.settings.color = action.payload
       }
     },
+    setBackgroundColor(state, action: PayloadAction<string>) {
+      if ('backgroundColor' in state.settings) {
+        state.settings.backgroundColor = action.payload
+      }
+    },
     setSprayDensity(state, action: PayloadAction<number>) {
       if (state.type === 'spray' && 'density' in state.settings) {
         state.settings.density = action.payload

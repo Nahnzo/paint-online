@@ -6,6 +6,7 @@ export interface BaseToolSettings {
 
 export interface ColorToolSettings extends BaseToolSettings {
   color: string
+  backgroundColor: string
 }
 
 export interface SprayToolSettings extends ColorToolSettings {

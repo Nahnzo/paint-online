@@ -19,7 +19,7 @@ export class TriangleNode implements ToolStrategy {
   }
 
   onMove(_baseCtx: CanvasRenderingContext2D, overlayCtx: CanvasRenderingContext2D, point: Point) {
-    const { color = 'white', size = 1 } = this.settings
+    const { color = 'white', size = 1, backgroundColor = 'transparent' } = this.settings
 
     this.width = point.x - this.startX
     this.height = point.y - this.startY
@@ -28,6 +28,8 @@ export class TriangleNode implements ToolStrategy {
 
     overlayCtx.strokeStyle = color
     overlayCtx.lineWidth = size
+    overlayCtx.fillStyle = backgroundColor
+    overlayCtx.fill()
 
     const x1 = this.startX
     const y1 = this.startY

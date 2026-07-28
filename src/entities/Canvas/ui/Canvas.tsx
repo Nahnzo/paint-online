@@ -2,10 +2,10 @@ import { useAppSelector } from 'shared/hooks/hooks'
 import { getCanvasBackgroundColor } from '../model/selectors'
 import {
   useCanvasResize,
-  useDragObject,
+  useDragNode,
   useMouseDrawing,
-  useResizeObject,
-  useSelectObject,
+  useResizeNode,
+  useSelectNode,
 } from 'features/CanvasFeatures'
 import { useRenderBase } from 'features/SceneFeatures'
 import { CanvasProps } from '../model/types'
@@ -17,9 +17,9 @@ const Canvas = ({ baseRef, overlayRef }: CanvasProps) => {
   useCanvasResize(overlayRef)
   useMouseDrawing({ baseRef, overlayRef })
   useRenderBase(baseRef)
-  useResizeObject(overlayRef)
-  useDragObject({ baseRef, overlayRef })
-  useSelectObject(overlayRef)
+  useResizeNode(overlayRef)
+  useDragNode({ baseRef, overlayRef })
+  useSelectNode(overlayRef)
 
   return (
     <>

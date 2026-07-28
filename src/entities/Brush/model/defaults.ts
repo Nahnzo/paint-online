@@ -34,6 +34,7 @@ export const TOOL_DEFAULTS: Record<ToolType, Tool<ToolType>> = {
     settings: {
       size: 1,
       color: DEFAULT_COLOR_BRUSH_VALUE,
+      backgroundColor: 'transparent',
     },
   },
   square: {
@@ -42,6 +43,7 @@ export const TOOL_DEFAULTS: Record<ToolType, Tool<ToolType>> = {
     settings: {
       size: 1,
       color: DEFAULT_COLOR_BRUSH_VALUE,
+      backgroundColor: 'transparent',
     },
   },
   circle: {
@@ -50,6 +52,7 @@ export const TOOL_DEFAULTS: Record<ToolType, Tool<ToolType>> = {
     settings: {
       size: 1,
       color: DEFAULT_COLOR_BRUSH_VALUE,
+      backgroundColor: 'transparent',
     },
   },
   triangle: {
@@ -58,6 +61,7 @@ export const TOOL_DEFAULTS: Record<ToolType, Tool<ToolType>> = {
     settings: {
       size: 1,
       color: DEFAULT_COLOR_BRUSH_VALUE,
+      backgroundColor: 'transparent',
     },
   },
   paintRoller: {

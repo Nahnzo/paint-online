@@ -28,6 +28,10 @@ export const ToolSettings = ({ fields }: ToolSettingsProps) => {
             <div key={field.label}>
               <p>{field.label}</p>
               <ColorPicker action={actions.setColor} defaultValue={field.defaultValue} />
+              <ColorPicker
+                action={actions.setBackgroundColor}
+                defaultValue={field.backgroundColor ?? ''}
+              />
             </div>
           )
         }

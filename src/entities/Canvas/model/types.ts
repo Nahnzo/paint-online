@@ -10,6 +10,6 @@ export interface Canvas {
 }
 
 export interface CanvasProps {
-  baseRef: RefObject<HTMLCanvasElement | null>
-  overlayRef: RefObject<HTMLCanvasElement | null>
+  baseRef: RefObject<HTMLCanvasElement>
+  overlayRef: RefObject<HTMLCanvasElement>
 }

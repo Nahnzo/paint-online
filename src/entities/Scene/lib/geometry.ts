@@ -89,6 +89,9 @@ export function getNodeCenter(node: SceneNode): Point {
   }
 }
 
+export const getAngle = (point: Point, center: Point) =>
+  Math.atan2(point.y - center.y, point.x - center.x)
+
 export function isBoundsInside(inner: Bounds, outer: Bounds): boolean {
   return (
     inner.left >= outer.left &&
@@ -97,6 +100,13 @@ export function isBoundsInside(inner: Bounds, outer: Bounds): boolean {
     inner.bottom <= outer.bottom
   )
 }
+
+export const getSelectionBounds = (a: Point, b: Point): Bounds => ({
+  left: Math.min(a.x, b.x),
+  top: Math.min(a.y, b.y),
+  right: Math.max(a.x, b.x),
+  bottom: Math.max(a.y, b.y),
+})
 
 function distanceToSegment(point: Point, a: Point, b: Point): number {
   const ax = point.x - a.x
@@ -120,10 +130,3 @@ function distanceToSegment(point: Point, a: Point, b: Point): number {
 
   return Math.sqrt(dx * dx + dy * dy)
 }
-
-export const getSelectionBounds = (a: Point, b: Point): Bounds => ({
-  left: Math.min(a.x, b.x),
-  top: Math.min(a.y, b.y),
-  right: Math.max(a.x, b.x),
-  bottom: Math.max(a.y, b.y),
-})

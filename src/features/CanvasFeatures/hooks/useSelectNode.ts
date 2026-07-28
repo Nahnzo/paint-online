@@ -18,7 +18,7 @@ import {
 } from 'entities/Scene'
 import { getCanvasMode } from 'entities/Canvas'
 
-export const useSelectObject = (overlayRef: React.RefObject<HTMLCanvasElement>) => {
+export const useSelectNode = (overlayRef: React.RefObject<HTMLCanvasElement>) => {
   const nodes = useAppSelector(getNodesSelector)
   const selectedIds = useAppSelector(getSelectedIdsSelector)
   const canvasMode = useAppSelector(getCanvasMode)

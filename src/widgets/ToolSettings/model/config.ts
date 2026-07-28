@@ -1,5 +1,5 @@
 import { ToolType } from 'entities/Tool'
-import { DEFAULT_COLOR_BRUSH_VALUE } from 'shared/consts/consts'
+import { DEFAULT_BACKGROUND_CANVAS_VALUE, DEFAULT_COLOR_BRUSH_VALUE } from 'shared/consts/consts'
 import { ToolSettingsField } from './types'
 
 export const TOOL_SETTINGS_CONFIG: Record<ToolType, ToolSettingsField[]> = {
@@ -8,19 +8,39 @@ export const TOOL_SETTINGS_CONFIG: Record<ToolType, ToolSettingsField[]> = {
     { kind: 'range', label: 'Stroke width', min: 1, max: 20, action: 'setSize' },
   ],
   circle: [
-    { kind: 'color', label: 'Stroke color', defaultValue: DEFAULT_COLOR_BRUSH_VALUE },
+    {
+      kind: 'color',
+      label: 'Stroke color',
+      defaultValue: DEFAULT_COLOR_BRUSH_VALUE,
+      backgroundColor: DEFAULT_BACKGROUND_CANVAS_VALUE,
+    },
     { kind: 'range', label: 'Stroke width', min: 1, max: 20, action: 'setSize' },
   ],
   rectangle: [
-    { kind: 'color', label: 'Stroke color', defaultValue: DEFAULT_COLOR_BRUSH_VALUE },
+    {
+      kind: 'color',
+      label: 'Stroke color',
+      defaultValue: DEFAULT_COLOR_BRUSH_VALUE,
+      backgroundColor: DEFAULT_BACKGROUND_CANVAS_VALUE,
+    },
     { kind: 'range', label: 'Stroke width', min: 1, max: 20, action: 'setSize' },
   ],
   square: [
-    { kind: 'color', label: 'Stroke color', defaultValue: DEFAULT_COLOR_BRUSH_VALUE },
+    {
+      kind: 'color',
+      label: 'Stroke color',
+      defaultValue: DEFAULT_COLOR_BRUSH_VALUE,
+      backgroundColor: DEFAULT_BACKGROUND_CANVAS_VALUE,
+    },
     { kind: 'range', label: 'Stroke width', min: 1, max: 20, action: 'setSize' },
   ],
   triangle: [
-    { kind: 'color', label: 'Stroke color', defaultValue: DEFAULT_COLOR_BRUSH_VALUE },
+    {
+      kind: 'color',
+      label: 'Stroke color',
+      defaultValue: DEFAULT_COLOR_BRUSH_VALUE,
+      backgroundColor: DEFAULT_BACKGROUND_CANVAS_VALUE,
+    },
     { kind: 'range', label: 'Stroke width', min: 1, max: 20, action: 'setSize' },
   ],
   eraser: [{ kind: 'range', label: 'Stroke width', min: 1, max: 100, action: 'setSize' }],
