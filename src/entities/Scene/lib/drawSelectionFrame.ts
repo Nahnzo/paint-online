@@ -1,7 +1,11 @@
 import { Bounds, SceneNode } from '../model/types'
 import { getNodeBounds } from './getNodeBounds'
 
-export function createMultiFrame(bounds: Bounds, overlayRef: React.RefObject<HTMLCanvasElement>) {
+export function createMultiFrame(
+  bounds: Bounds,
+  overlayRef: React.RefObject<HTMLCanvasElement>,
+  zoomState?: { scale: number; offsetX: number; offsetY: number },
+) {
   const overlayCanvas = overlayRef.current
   const overlayCtx = overlayCanvas.getContext('2d')!
   const handleSize = 8
@@ -14,6 +18,16 @@ export function createMultiFrame(bounds: Bounds, overlayRef: React.RefObject<HTM
   const height = bounds.bottom - bounds.top + padding * 2
 
   overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height)
+  overlayCtx.save()
+  if (zoomState)
+    overlayCtx.setTransform(
+      zoomState.scale,
+      0,
+      0,
+      zoomState.scale,
+      zoomState.offsetX,
+      zoomState.offsetY,
+    )
   overlayCtx.strokeStyle = 'blue'
   overlayCtx.lineWidth = 1
   overlayCtx.strokeRect(x, y, width, height)
@@ -36,6 +50,7 @@ export function createMultiFrame(bounds: Bounds, overlayRef: React.RefObject<HTM
 export function createNodeFrame(
   hitNode: SceneNode,
   overlayRef: React.RefObject<HTMLCanvasElement>,
+  zoomState?: { scale: number; offsetX: number; offsetY: number },
 ) {
   const overlayCanvas = overlayRef.current
   if (!overlayCanvas) return
@@ -54,6 +69,15 @@ export function createNodeFrame(
 
   overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height)
   overlayCtx.save()
+  if (zoomState)
+    overlayCtx.setTransform(
+      zoomState.scale,
+      0,
+      0,
+      zoomState.scale,
+      zoomState.offsetX,
+      zoomState.offsetY,
+    )
   overlayCtx.translate(centerX, centerY)
   overlayCtx.rotate(hitNode.rotation ?? 0)
 

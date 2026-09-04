@@ -16,12 +16,14 @@ import { useActionCreators, useAppSelector } from 'shared/hooks/hooks'
 import { brushActions, getBrushType } from 'entities/Brush'
 import { sceneActions } from 'entities/Scene'
 import './index.scss'
+import { getCanvasViewport } from 'entities/Canvas/model/selectors'
 
 function App() {
   const baseRef = useRef<HTMLCanvasElement>(null)
   const overlayRef = useRef<HTMLCanvasElement>(null)
   const canvasMode = useAppSelector(getCanvasMode)
   const toolType = useAppSelector(getBrushType)
+  const canvasZoom = useAppSelector(getCanvasViewport)
   const { redo, undo } = useActionCreators(sceneActions)
   const { setCanvasMode } = useActionCreators(canvasActions)
   const { setToolType } = useActionCreators(brushActions)
@@ -34,6 +36,7 @@ function App() {
   return (
     <div className="canvasContainer">
       <Toolbar position="left">
+        zoom{canvasZoom.percent}
         <ActiveToolCanvas />
       </Toolbar>
       <Toolbar position="top">

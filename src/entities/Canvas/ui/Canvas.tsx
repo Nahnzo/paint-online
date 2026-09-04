@@ -6,7 +6,6 @@ import {
   useMouseDrawing,
   useResizeNode,
   useSelectNode,
-  // useZoom,
 } from 'features/CanvasFeatures'
 import { useRenderBase } from 'features/SceneFeatures'
 import { CanvasProps } from '../model/types'
@@ -14,7 +13,6 @@ import { CanvasProps } from '../model/types'
 const Canvas = ({ baseRef, overlayRef }: CanvasProps) => {
   const canvasBackgroundColor = useAppSelector(getCanvasBackgroundColor)
 
-  // useZoom({ baseRef, overlayRef })
   useCanvasResize(baseRef)
   useCanvasResize(overlayRef)
   useMouseDrawing({ baseRef, overlayRef })

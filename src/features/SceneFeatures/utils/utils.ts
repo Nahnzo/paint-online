@@ -1,5 +1,5 @@
+import { getCanvasViewport } from 'entities/Canvas/model/selectors'
 import { getNodeBounds, getNodeSettings, getNodesSelector, SceneNode } from 'entities/Scene'
-import { useZoom } from 'features/CanvasFeatures'
 import { useEffect } from 'react'
 import { useAppSelector } from 'shared/hooks/hooks'
 
@@ -84,7 +84,8 @@ export function renderNodes(ctx: CanvasRenderingContext2D, nodes: SceneNode[]) {
 }
 
 export const useRenderBase = (baseRef: React.RefObject<HTMLCanvasElement>) => {
-  const { offsetX, offsetY, scale } = useZoom(baseRef)
+  const { percent, offsetX, offsetY } = useAppSelector(getCanvasViewport)
+  const scale = percent / 100
   const nodes = useAppSelector(getNodesSelector)
 
   useEffect(() => {

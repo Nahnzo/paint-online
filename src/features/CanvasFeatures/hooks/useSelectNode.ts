@@ -17,11 +17,13 @@ import {
   getBoxHandles,
 } from 'entities/Scene'
 import { getCanvasMode } from 'entities/Canvas'
+import { useZoom } from './useZoom'
 
 export const useSelectNode = (overlayRef: React.RefObject<HTMLCanvasElement>) => {
   const nodes = useAppSelector(getNodesSelector)
   const selectedIds = useAppSelector(getSelectedIdsSelector)
   const canvasMode = useAppSelector(getCanvasMode)
+  const zoomState = useZoom(overlayRef)
 
   const { selectMultiNode, selectNode, clearSelection } = useActionCreators(sceneActions)
 
@@ -158,11 +160,11 @@ export const useSelectNode = (overlayRef: React.RefObject<HTMLCanvasElement>) =>
       const selectedNode = nodes.find((node) => node.id === selectedIds[0])
 
       if (!selectedNode) return
-      if (selectedNode) createNodeFrame(selectedNode, overlayRef)
+      if (selectedNode) createNodeFrame(selectedNode, overlayRef, zoomState)
     } else {
       const selectedNodes = nodes.filter((s) => selectedIds.includes(s.id))
       const groupBounds = getGroupBounds(selectedNodes)
-      createMultiFrame(groupBounds, overlayRef)
+      createMultiFrame(groupBounds, overlayRef, zoomState)
     }
   })
   useEffect(() => {

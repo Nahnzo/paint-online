@@ -6,6 +6,11 @@ export type CanvasMode = 'select' | 'draw' | 'zoom'
 export interface Canvas {
   canvasMode: CanvasMode
   tool: ToolType
+  zoom: {
+    percent: number
+    offsetX: number
+    offsetY: number
+  }
   backgroundColor: string
 }
 

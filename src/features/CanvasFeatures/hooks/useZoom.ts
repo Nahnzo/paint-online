@@ -1,45 +1,59 @@
-import { useEffect, useState } from 'react'
+import { canvasActions } from 'entities/Canvas'
+import { getCanvasViewport } from 'entities/Canvas/model/selectors'
+import { useEffect, useRef } from 'react'
+import { useActionCreators, useAppSelector } from 'shared/hooks/hooks'
 
 export const useZoom = (baseRef: React.RefObject<HTMLCanvasElement>) => {
-  const [zoomState, setZoomState] = useState({
-    scale: 1,
-    offsetX: 0,
-    offsetY: 0,
-  })
+  const viewport = useAppSelector(getCanvasViewport)
+  const { setViewport } = useActionCreators(canvasActions)
 
+  const viewportRef = useRef(viewport)
+
+  useEffect(() => {
+    viewportRef.current = viewport
+  }, [viewport])
   useEffect(() => {
     const baseCanvas = baseRef.current
     if (!baseCanvas) return
 
-    const baseCtx = baseCanvas.getContext('2d')
-    if (!baseCtx) return
-
-    let scale = zoomState.scale
-    let offsetX = zoomState.offsetX
-    let offsetY = zoomState.offsetY
     const zoomIntensity = 0.1
 
     const onZoom = (e: WheelEvent) => {
+      if (!baseCanvas.contains(e.target as Node)) return
+
       const rect = baseCanvas.getBoundingClientRect()
       const mouseX = e.clientX - rect.left
       const mouseY = e.clientY - rect.top
 
+      if (mouseX < 0 || mouseX > rect.width || mouseY < 0 || mouseY > rect.height) return
+
+      e.preventDefault()
+
+      const { percent, offsetX, offsetY } = viewportRef.current
+      const scale = percent / 100
       const zoom = e.deltaY < 0 ? 1 + zoomIntensity : 1 - zoomIntensity
-      const newScale = Math.max(0.1, Math.min(scale * zoom, 10))
+      const newScale = Math.max(0.1, Math.min(scale * zoom, 2))
 
-      offsetX = mouseX - (mouseX - offsetX) * (newScale / scale)
-      offsetY = mouseY - (mouseY - offsetY) * (newScale / scale)
-      scale = newScale
+      const newOffsetX = mouseX - (mouseX - offsetX) * (newScale / scale)
+      const newOffsetY = mouseY - (mouseY - offsetY) * (newScale / scale)
 
-      setZoomState({ scale, offsetX, offsetY })
+      setViewport({
+        percent: Math.round(newScale * 100),
+        offsetX: newOffsetX,
+        offsetY: newOffsetY,
+      })
     }
 
-    document.addEventListener('wheel', onZoom)
+    document.addEventListener('wheel', onZoom, { passive: false })
 
     return () => {
       document.removeEventListener('wheel', onZoom)
     }
-  }, [baseRef, zoomState.offsetX, zoomState.offsetY, zoomState.scale])
+  }, [baseRef, setViewport])
 
-  return zoomState
+  return {
+    scale: viewport.percent / 100,
+    offsetX: viewport.offsetX,
+    offsetY: viewport.offsetY,
+  }
 }
