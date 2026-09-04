@@ -1,6 +1,15 @@
 import { Point } from 'entities/Tool'
 import { SceneNode, Bounds } from '../model/types'
-import { getNodeBounds } from './getNodeBounds'
+import { getGroupBounds, getNodeBounds } from './getNodeBounds'
+
+export function isPointInsideFrame(point: Point, bounds: Bounds): boolean {
+  return (
+    point.x + 10 >= bounds.left &&
+    point.x - 10 <= bounds.right &&
+    point.y + 10 >= bounds.top &&
+    point.y - 10 <= bounds.bottom
+  )
+}
 
 export function isPointInsideNodeBounds(point: Point, node: SceneNode): boolean {
   const angle = node.rotation ?? 0
@@ -86,6 +95,14 @@ export function getNodeCenter(node: SceneNode): Point {
         x: bounds.left + (bounds.right - bounds.left) / 2,
         y: bounds.top + (bounds.bottom - bounds.top) / 2,
       }
+  }
+}
+
+export const getGroupCenter = (nodes: SceneNode[]): Point => {
+  const bounds = getGroupBounds(nodes)
+  return {
+    x: bounds.left + (bounds.right - bounds.left) / 2,
+    y: bounds.top + (bounds.bottom - bounds.top) / 2,
   }
 }
 

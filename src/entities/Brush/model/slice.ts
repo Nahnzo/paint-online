@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Tool } from './types'
-import { ToolType } from 'entities/Tool'
+import { AnyToolSettings, ToolType } from 'entities/Tool'
 import { TOOL_DEFAULTS } from './defaults'
 
 const initialState: Tool<ToolType> = TOOL_DEFAULTS.brush
@@ -12,31 +12,8 @@ export const toolSlice = createSlice({
     setToolType(state, action: PayloadAction<ToolType>) {
       return TOOL_DEFAULTS[action.payload]
     },
-    setSize(state, action: PayloadAction<number>) {
-      if ('size' in state.settings) {
-        console.log(action.payload)
-        state.settings.size = action.payload
-      }
-    },
-    setColor(state, action: PayloadAction<string>) {
-      if ('color' in state.settings) {
-        state.settings.color = action.payload
-      }
-    },
-    setBackgroundColor(state, action: PayloadAction<string>) {
-      if ('backgroundColor' in state.settings) {
-        state.settings.backgroundColor = action.payload
-      }
-    },
-    setSprayDensity(state, action: PayloadAction<number>) {
-      if (state.type === 'spray' && 'density' in state.settings) {
-        state.settings.density = action.payload
-      }
-    },
-    setHardness(state, action: PayloadAction<number>) {
-      if (state.type === 'eraser' && 'hardness' in state.settings) {
-        state.settings.hardness = action.payload
-      }
+    updateSettings(state, action: PayloadAction<Partial<AnyToolSettings>>) {
+      Object.assign(state.settings, action.payload)
     },
   },
 })

@@ -227,15 +227,12 @@ export const sceneSlice = createSlice({
       state.nodes = next
       state.futureScene = state.futureScene.slice(0, state.futureScene.length - 1)
     },
-
-    setColor(state, action: PayloadAction<{ id: string; color: string }>) {
-      console.log(action.payload.color)
-      const node = state.nodes.find((n) => n.id === action.payload.id)
-      if (node) {
-        node.settings.backgroundColor = action.payload.color
-      }
+    updateSelectedNodeSettings(state, action: PayloadAction<Partial<SceneNode>>) {
+      const nodes = state.nodes.filter((n) => state.selectedNodesIds.includes(n.id))
+      nodes.map((n) => {
+        if (n.settings) Object.assign(n.settings, action.payload)
+      })
     },
-
     commitMove(state, action) {
       state.pastScene = [...state.pastScene, action.payload]
     },

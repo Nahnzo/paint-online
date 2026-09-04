@@ -5,11 +5,11 @@ import { useActionCreators, useAppSelector } from 'shared/hooks/hooks'
 import {
   getNodesSelector,
   getSelectedIdsSelector,
-  getShapeHandles,
   isPointInsideNodeBounds,
   isPointOnHandle,
   sceneActions,
   SceneNode,
+  getBoxHandles,
 } from 'entities/Scene'
 import { CanvasProps, getCanvasMode } from 'entities/Canvas'
 
@@ -79,10 +79,11 @@ export const useMouseDrawing = ({ baseRef, overlayRef }: CanvasProps) => {
 
     const onMouseDown = (e: MouseEvent) => {
       const point = getPoint(e)
-      const currentNode = nodesRef.current.find((node) => selectedIdsRef.current.includes(node.id))
-      if (currentNode) {
-        const handles = getShapeHandles(currentNode)
-        const hitHandle = Object.values(handles).find((handle) => isPointOnHandle(point, handle))
+      const selectedNodes = nodesRef.current.filter((n) => selectedIdsRef.current.includes(n.id))
+
+      if (selectedNodes.length > 0) {
+        const handles = getBoxHandles(selectedNodes)
+        const hitHandle = handles && Object.values(handles).find((h) => isPointOnHandle(point, h))
         if (hitHandle) return
       }
 
@@ -96,7 +97,6 @@ export const useMouseDrawing = ({ baseRef, overlayRef }: CanvasProps) => {
       }
 
       drawing = true
-
       brush = createTool(brushType, toolSettings, handleFinishNode)
       brush.onStart(baseCtx, overlayCtx, point)
     }

@@ -1,13 +1,32 @@
 import { SprayBrush } from 'entities/Brush'
 import { EraserBrush as Eraser } from 'entities/Eraser'
 import { ToolStrategy } from './strategy'
-import { ToolSettingsMap, ToolType } from './types'
+import {
+  BaseToolSettings,
+  EraserToolSettings,
+  PaintRollerToolSettings,
+  ShapeToolSettings,
+  SprayToolSettings,
+  ToolSettingsMap,
+  ToolType,
+} from './types'
 import { CircleNode, PathNode, RectangleNode, TriangleNode } from 'entities/Node'
 import { PaintRollerTool } from 'entities/PaintRoller'
 import { SceneNode } from 'entities/Scene'
 import { SquareNode } from 'entities/Node/nodes/SquareNode'
 
-export type AnyToolSettings = ToolSettingsMap[keyof ToolSettingsMap]
+export type AnyToolSettings =
+  | BaseToolSettings
+  | ShapeToolSettings
+  | SprayToolSettings
+  | EraserToolSettings
+  | PaintRollerToolSettings
+
+export type AnyToolSettingsKey = keyof (BaseToolSettings &
+  ShapeToolSettings &
+  SprayToolSettings &
+  EraserToolSettings &
+  PaintRollerToolSettings)
 
 export const createTool = (
   tool: ToolType,

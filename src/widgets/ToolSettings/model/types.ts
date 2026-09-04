@@ -1,9 +1,15 @@
 export type ToolSettingsField =
-  | { kind: 'color'; label: string; defaultValue: string; backgroundColor?: string }
+  | {
+      kind: 'color'
+      label: string
+      defaultValue: string
+      backgroundColor?: string
+      borderWidth?: number
+    }
   | {
       kind: 'range'
       label: string
       min: number
       max: number
-      action: 'setSize' | 'setSprayDensity' | 'setHardness'
+      settingsKey: 'size' | 'density' | 'hardness' | 'borderWidth' | 'backgroundColor'
     }

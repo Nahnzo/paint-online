@@ -4,9 +4,11 @@ import { Point } from 'entities/Tool'
 import { DEFAULT_BACKGROUND_CANVAS_VALUE } from 'shared/consts/consts'
 import {
   createNodeFrame,
+  getBoxHandles,
   getNodesSelector,
   getSelectedIdsSelector,
   isPointInsideNodeBounds,
+  isPointOnHandle,
   sceneActions,
 } from 'entities/Scene'
 import { CanvasProps } from 'entities/Canvas'
@@ -65,13 +67,20 @@ export const useDragNode = ({ baseRef, overlayRef }: CanvasProps) => {
       const currentIds = selectedIdsRef.current
       snapshotRef.current = nodesRef.current
 
+      const selectedNodes = currentNodes.filter((s) => currentIds.includes(s.id))
+
+      if (selectedNodes.length > 0) {
+        const handles = getBoxHandles(selectedNodes)
+        const hitHandle = handles && Object.values(handles).find((h) => isPointOnHandle(point, h))
+        if (hitHandle) return
+      }
+
       const hovered = currentNodes.find(
         (s) => currentIds.includes(s.id) && isPointInsideNodeBounds(point, s),
       )
 
       if (!hovered) {
         if (currentIds.length > 1) {
-          const selectedNodes = currentNodes.filter((s) => currentIds.includes(s.id))
           const groupBounds = getGroupBounds(selectedNodes)
           const inGroup =
             point.x >= groupBounds.left &&

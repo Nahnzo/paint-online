@@ -2,18 +2,20 @@ import { useEffect, useRef } from 'react'
 import {
   getSelectedIdsSelector,
   getNodesSelector,
-  getShapeHandles,
   isPointInsideNodeBounds,
   isPointOnHandle,
+  getGroupBounds,
+  getBoxHandles,
 } from 'entities/Scene'
 import { Point } from 'entities/Tool'
 import { useAppSelector } from 'shared/hooks/hooks'
+import { isPointInsideFrame } from 'entities/Scene/lib/geometry'
 
 type Node = ReturnType<typeof getNodesSelector>[number]
 
 export type DragHandlers = {
-  onDragStart?: (handle: string, point: Point, node: Node) => void
-  onDrag: (handle: string, dx: number, dy: number, point: Point, node: Node) => void
+  onDragStart?: (handle: string, point: Point, nodes: Node[]) => void
+  onDrag: (handle: string, dx: number, dy: number, point: Point, nodes: Node[]) => void
   onDragEnd?: (snapshot: Node[]) => void
 }
 
@@ -54,41 +56,52 @@ export const useDragHandle = (
       return { x: e.clientX - rect.left, y: e.clientY - rect.top }
     }
 
-    const findSelected = () => nodesRef.current.find((n) => selectedIdsRef.current.includes(n.id))
+    const findSelectedNodes = () => {
+      const result = nodesRef.current.filter((n) => selectedIdsRef.current.includes(n.id))
+      return result || []
+    }
 
     const onMouseDown = (e: MouseEvent) => {
       const point = getPoint(e)
-      const node = findSelected()
-      if (!node) return
+      const nodes = findSelectedNodes()
 
-      const handles = getShapeHandles(node)
+      if (nodes.length === 0) return
+
+      const handles = getBoxHandles(nodes)
+
+      if (!handles) return
+
       const hit = Object.entries(handles).find(([, h]) => isPointOnHandle(point, h))
-      if (!hit) return
 
+      if (!hit) return
       snapshotRef.current = nodesRef.current
       activeHandleRef.current = hit[0]
       lastPointRef.current = point
-      handlersRef.current.onDragStart?.(hit[0], point, node)
+      handlersRef.current.onDragStart?.(hit[0], point, nodes)
     }
 
     const onMouseMove = (e: MouseEvent) => {
       const point = getPoint(e)
-      const node = findSelected()
+      const nodes = findSelectedNodes()
 
-      if (node) {
-        const handles = getShapeHandles(node)
-        const hit = Object.values(handles).find((h) => isPointOnHandle(point, h))
-        const onShape = isPointInsideNodeBounds(point, node)
+      if (nodes.length > 0) {
+        const handles = getBoxHandles(nodes)
+        const hit = handles && Object.values(handles).find((h) => isPointOnHandle(point, h))
 
-        canvas.style.cursor = hit ? hit.cursor : onShape ? 'grab' : 'crosshair'
+        const isInside =
+          nodes.length === 1
+            ? isPointInsideNodeBounds(point, nodes[0])
+            : isPointInsideFrame(point, getGroupBounds(nodes))
+
+        canvas.style.cursor = hit ? hit.cursor : isInside ? 'grab' : 'crosshair'
       }
 
-      if (!activeHandleRef.current || !lastPointRef.current || !node) return
+      if (!activeHandleRef.current || !lastPointRef.current || nodes.length === 0) return
 
       const dx = point.x - lastPointRef.current.x
       const dy = point.y - lastPointRef.current.y
 
-      handlersRef.current.onDrag(activeHandleRef.current, dx, dy, point, node)
+      handlersRef.current.onDrag(activeHandleRef.current, dx, dy, point, nodes)
       lastPointRef.current = point
     }
 

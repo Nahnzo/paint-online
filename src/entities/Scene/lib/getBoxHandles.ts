@@ -1,6 +1,6 @@
 import { Point } from 'entities/Tool'
-import { SceneNode } from '../model/types'
-import { getNodeBounds } from './getNodeBounds'
+import { Bounds, Handles, SceneNode } from '../model/types'
+import { getGroupBounds, getNodeBounds } from './getNodeBounds'
 
 const HANDLE_HIT_SIZE = 16
 
@@ -21,8 +21,15 @@ export const isPointOnHandle = (point: Point, handle: { x: number; y: number }) 
   )
 }
 
-export const getShapeHandles = (node: SceneNode) => {
-  const bounds = getNodeBounds(node)
+export const getBoxHandles = (nodes: SceneNode[]): Handles | undefined => {
+  if (nodes.length === 0) return undefined
+  const bounds = nodes.length === 1 ? getNodeBounds(nodes[0]) : getGroupBounds(nodes)
+  const rotation = nodes.length === 1 ? (nodes[0].rotation ?? 0) : 0
+
+  return buildHandlesFromBounds(bounds, rotation)
+}
+
+const buildHandlesFromBounds = (bounds: Bounds, rotation: number): Handles => {
   const padding = 10
 
   const left = bounds.left - padding
@@ -31,28 +38,19 @@ export const getShapeHandles = (node: SceneNode) => {
   const bottom = bounds.bottom + padding
 
   const width = right - left
-  const height = bottom - top
   const centerX = left + width / 2
-  const centerY = top + height / 2
-  const rotation = node.rotation ?? 0
+  const centerY = top + (bottom - top) / 2
 
   const rotate = (px: number, py: number) => ({
     x: Math.cos(rotation) * (px - centerX) - Math.sin(rotation) * (py - centerY) + centerX,
     y: Math.sin(rotation) * (px - centerX) + Math.cos(rotation) * (py - centerY) + centerY,
   })
 
-  const tl = rotate(left, top)
-  const tr = rotate(right, top)
-  const br = rotate(right, bottom)
-  const bl = rotate(left, bottom)
-
-  const rot = rotate(left + width / 2, top - 20)
-
   return {
-    topLeft: { ...tl, cursor: getResizeCursor('nwse-resize', rotation) },
-    topRight: { ...tr, cursor: getResizeCursor('nesw-resize', rotation) },
-    bottomRight: { ...br, cursor: getResizeCursor('nwse-resize', rotation) },
-    bottomLeft: { ...bl, cursor: getResizeCursor('nesw-resize', rotation) },
-    rotate: { ...rot, cursor: 'grab' },
+    topLeft: { ...rotate(left, top), cursor: getResizeCursor('nwse-resize', rotation) },
+    topRight: { ...rotate(right, top), cursor: getResizeCursor('nesw-resize', rotation) },
+    bottomRight: { ...rotate(right, bottom), cursor: getResizeCursor('nwse-resize', rotation) },
+    bottomLeft: { ...rotate(left, bottom), cursor: getResizeCursor('nesw-resize', rotation) },
+    rotate: { ...rotate(left + width / 2, top - 20), cursor: 'grab' },
   }
 }

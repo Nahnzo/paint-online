@@ -10,11 +10,11 @@ import {
   getNodesSelector,
   getSelectedIdsSelector,
   getSelectionBounds,
-  getShapeHandles,
   isBoundsInside,
   isPointInsideNodeBounds,
   isPointOnHandle,
   sceneActions,
+  getBoxHandles,
 } from 'entities/Scene'
 import { getCanvasMode } from 'entities/Canvas'
 
@@ -54,10 +54,12 @@ export const useSelectNode = (overlayRef: React.RefObject<HTMLCanvasElement>) =>
       if (canvasMode !== 'select') return
       const point = getPoint(e)
 
-      const currentNode = nodes.find((s) => selectedIds.includes(s.id))
-      if (currentNode) {
-        const handles = getShapeHandles(currentNode)
-        const hitHandle = Object.values(handles).find((handle) => isPointOnHandle(point, handle))
+      const selectedNodes = nodes.filter((n) => selectedIds.includes(n.id))
+
+      if (selectedNodes.length > 0) {
+        const handles = getBoxHandles(selectedNodes)
+        const hitHandle =
+          handles && Object.values(handles).find((handle) => isPointOnHandle(point, handle))
         if (hitHandle) return
       }
 
@@ -68,6 +70,16 @@ export const useSelectNode = (overlayRef: React.RefObject<HTMLCanvasElement>) =>
         }
         canvas.style.cursor = 'grabbing'
         return
+      }
+
+      if (selectedNodes.length > 1) {
+        const groupBounds = getGroupBounds(selectedNodes)
+        const inGroup =
+          point.x >= groupBounds.left &&
+          point.x <= groupBounds.right &&
+          point.y >= groupBounds.top &&
+          point.y <= groupBounds.bottom
+        if (inGroup) return
       }
 
       clearSelection()

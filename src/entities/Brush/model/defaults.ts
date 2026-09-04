@@ -32,36 +32,36 @@ export const TOOL_DEFAULTS: Record<ToolType, Tool<ToolType>> = {
     category: 'shape',
     type: 'rectangle',
     settings: {
-      size: 1,
       color: DEFAULT_COLOR_BRUSH_VALUE,
       backgroundColor: 'transparent',
+      borderWidth: 1,
     },
   },
   square: {
     category: 'shape',
     type: 'square',
     settings: {
-      size: 1,
       color: DEFAULT_COLOR_BRUSH_VALUE,
       backgroundColor: 'transparent',
+      borderWidth: 1,
     },
   },
   circle: {
     category: 'shape',
     type: 'circle',
     settings: {
-      size: 1,
       color: DEFAULT_COLOR_BRUSH_VALUE,
       backgroundColor: 'transparent',
+      borderWidth: 1,
     },
   },
   triangle: {
     category: 'shape',
     type: 'triangle',
     settings: {
-      size: 1,
       color: DEFAULT_COLOR_BRUSH_VALUE,
       backgroundColor: 'transparent',
+      borderWidth: 1,
     },
   },
   paintRoller: {

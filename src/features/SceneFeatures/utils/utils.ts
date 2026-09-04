@@ -1,16 +1,17 @@
 import { getNodeBounds, getNodeSettings, getNodesSelector, SceneNode } from 'entities/Scene'
+import { useZoom } from 'features/CanvasFeatures'
 import { useEffect } from 'react'
 import { useAppSelector } from 'shared/hooks/hooks'
 
 export function renderNodes(ctx: CanvasRenderingContext2D, nodes: SceneNode[]) {
   nodes.forEach((node) => {
     const coordinates = node.coordinates ?? { x: 0, y: 0 }
-    const { color, size, backgroundColor } = getNodeSettings(node)
+    const { color, borderWidth, size, backgroundColor } = getNodeSettings(node)
 
     ctx.save()
     ctx.strokeStyle = color
     ctx.fillStyle = backgroundColor
-    ctx.lineWidth = size
+    ctx.lineWidth = node.type === 'path' ? size : borderWidth
 
     if (node.type === 'rectangle') {
       const width = node.width ?? 0
@@ -83,6 +84,7 @@ export function renderNodes(ctx: CanvasRenderingContext2D, nodes: SceneNode[]) {
 }
 
 export const useRenderBase = (baseRef: React.RefObject<HTMLCanvasElement>) => {
+  const { offsetX, offsetY, scale } = useZoom(baseRef)
   const nodes = useAppSelector(getNodesSelector)
 
   useEffect(() => {
@@ -93,7 +95,8 @@ export const useRenderBase = (baseRef: React.RefObject<HTMLCanvasElement>) => {
     if (!ctx) return
 
     ctx.clearRect(0, 0, canvas.width, canvas.height)
+    ctx.setTransform(scale, 0, 0, scale, offsetX, offsetY)
 
     renderNodes(ctx, nodes)
-  }, [nodes, baseRef])
+  }, [nodes, baseRef, scale, offsetX, offsetY])
 }

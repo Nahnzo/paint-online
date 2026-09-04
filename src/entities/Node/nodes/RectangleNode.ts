@@ -19,7 +19,7 @@ export class RectangleNode implements ToolStrategy {
   }
 
   onMove(_baseCtx: CanvasRenderingContext2D, overlayCtx: CanvasRenderingContext2D, point: Point) {
-    const { color = 'white', size = 1, backgroundColor = 'transparent' } = this.settings
+    const { color = 'white', borderWidth = 1, backgroundColor = 'transparent' } = this.settings
     this.width = point.x - this.startX
     this.height = point.y - this.startY
 
@@ -29,7 +29,7 @@ export class RectangleNode implements ToolStrategy {
     overlayCtx.fillRect(this.startX, this.startY, this.width, this.height)
 
     overlayCtx.strokeStyle = color
-    overlayCtx.lineWidth = size
+    overlayCtx.lineWidth = borderWidth
     overlayCtx.strokeRect(this.startX, this.startY, this.width, this.height)
   }
 

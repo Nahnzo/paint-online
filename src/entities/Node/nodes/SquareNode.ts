@@ -19,7 +19,7 @@ export class SquareNode implements ToolStrategy {
   }
 
   onMove(_baseCtx: CanvasRenderingContext2D, overlayCtx: CanvasRenderingContext2D, point: Point) {
-    const { color = 'white', size = 1, backgroundColor = 'transparent' } = this.settings
+    const { color = 'white', borderWidth = 1, backgroundColor = 'transparent' } = this.settings
 
     const side = Math.max(Math.abs(point.x - this.startX), Math.abs(point.y - this.startY))
     this.width = point.x < this.startX ? -side : side
@@ -29,7 +29,7 @@ export class SquareNode implements ToolStrategy {
     overlayCtx.fillStyle = backgroundColor
     overlayCtx.fillRect(this.startX, this.startY, this.width, this.height)
     overlayCtx.strokeStyle = color
-    overlayCtx.lineWidth = size
+    overlayCtx.lineWidth = borderWidth
     overlayCtx.strokeRect(this.startX, this.startY, this.width, this.height)
   }
 

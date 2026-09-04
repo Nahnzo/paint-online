@@ -18,7 +18,7 @@ export class CircleNode implements ToolStrategy {
   }
 
   onMove(_baseCtx: CanvasRenderingContext2D, overlayCtx: CanvasRenderingContext2D, point: Point) {
-    const { color = 'white', size = 1, backgroundColor = 'transparent' } = this.settings
+    const { color = 'white', borderWidth = 1, backgroundColor = 'transparent' } = this.settings
 
     const dx = point.x - this.startX
     const dy = point.y - this.startY
@@ -30,7 +30,7 @@ export class CircleNode implements ToolStrategy {
     overlayCtx.fill()
 
     overlayCtx.strokeStyle = color
-    overlayCtx.lineWidth = size
+    overlayCtx.lineWidth = borderWidth
 
     overlayCtx.beginPath()
     overlayCtx.arc(this.startX, this.startY, this.radius, 0, 2 * Math.PI)

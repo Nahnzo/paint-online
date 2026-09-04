@@ -9,9 +9,9 @@ import {
   isBoundsInside,
   getNodeCenter,
   getAngle,
+  getGroupCenter,
 } from './lib/geometry'
-import { isPointOnHandle } from './lib/getShapeHandles'
-import { getShapeHandles } from './lib/getShapeHandles'
+import { isPointOnHandle, getBoxHandles } from './lib/getBoxHandles'
 import { createNodeFrame, createMultiFrame } from './lib/drawSelectionFrame'
 import { getNodeBounds, getGroupBounds } from './lib/getNodeBounds'
 import { getNodeSettings } from './lib/getNodeSettings'
@@ -22,7 +22,6 @@ export {
   getNodesSelector,
   isPointInsideNodeBounds,
   isPointOnHandle,
-  getShapeHandles,
   createMultiFrame,
   createNodeFrame,
   getNodeBounds,
@@ -32,6 +31,8 @@ export {
   isBoundsInside,
   getNodeSettings,
   getNodeCenter,
+  getGroupCenter,
+  getBoxHandles,
   sceneActions,
   SceneNode,
 }

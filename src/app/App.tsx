@@ -25,6 +25,11 @@ function App() {
   const { redo, undo } = useActionCreators(sceneActions)
   const { setCanvasMode } = useActionCreators(canvasActions)
   const { setToolType } = useActionCreators(brushActions)
+  const isShape =
+    toolType === 'rectangle' ||
+    toolType === 'square' ||
+    toolType === 'circle' ||
+    toolType === 'triangle'
 
   return (
     <div className="canvasContainer">
@@ -51,7 +56,7 @@ function App() {
         />
         <ButtonIcon
           icon={VectorSquareIcon}
-          isActive={canvasMode === 'draw' && toolType === 'rectangle'}
+          isActive={isShape}
           onClick={() => {
             setToolType('rectangle')
             setCanvasMode('draw')

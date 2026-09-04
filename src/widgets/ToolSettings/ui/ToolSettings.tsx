@@ -5,19 +5,27 @@ import { ColorPicker } from 'shared/ui/ColorPicker'
 import { RangePicker } from 'shared/ui/RangePicker'
 import { ToolSettingsField } from '../model/types'
 import { defaultBackgroundColors, defaultColors } from 'shared/consts/consts'
+import { sceneActions } from 'entities/Scene'
+import { AnyToolSettingsKey } from 'entities/Tool'
 
 type ToolSettingsProps = {
   fields: ToolSettingsField[]
 }
 
 export const ToolSettings = ({ fields }: ToolSettingsProps) => {
-  const actions = useActionCreators(brushActions)
+  const toolActions = useActionCreators(brushActions)
+  const sceneAction = useActionCreators(sceneActions)
+
+  const updateField = (key: AnyToolSettingsKey, value: string | number) => {
+    toolActions.updateSettings({ [key]: value })
+    sceneAction.updateSelectedNodeSettings({ [key]: value })
+  }
 
   const [values, setValues] = useState<Record<string, number>>(() =>
     Object.fromEntries(
       fields
         .filter((f): f is Extract<ToolSettingsField, { kind: 'range' }> => f.kind === 'range')
-        .map((f) => [f.action, 1]),
+        .map((f) => [f.settingsKey, 1]),
     ),
   )
 
@@ -29,7 +37,7 @@ export const ToolSettings = ({ fields }: ToolSettingsProps) => {
             <div key={field.label}>
               <p>{field.label}</p>
               <ColorPicker
-                action={actions.setColor}
+                action={(value) => updateField('color', value)}
                 defaultValue={field.defaultValue}
                 colors={defaultColors}
               />
@@ -37,9 +45,9 @@ export const ToolSettings = ({ fields }: ToolSettingsProps) => {
                 <>
                   <p>Background color</p>
                   <ColorPicker
-                    action={actions.setBackgroundColor}
                     defaultValue="transparent"
                     colors={defaultBackgroundColors}
+                    action={(value) => updateField('backgroundColor', value)}
                   />
                 </>
               )}
@@ -47,16 +55,16 @@ export const ToolSettings = ({ fields }: ToolSettingsProps) => {
           )
         }
         return (
-          <div key={field.action}>
+          <div key={field.settingsKey}>
             <p>{field.label}</p>
             <RangePicker
               min={field.min}
               max={field.max}
-              value={values[field.action]}
+              value={values[field.settingsKey]}
               handler={(e) => {
                 const value = Number(e)
-                setValues((prev) => ({ ...prev, [field.action]: value }))
-                actions[field.action](value)
+                setValues((prev) => ({ ...prev, [field.settingsKey]: value }))
+                updateField(field.settingsKey, value)
               }}
             />
           </div>

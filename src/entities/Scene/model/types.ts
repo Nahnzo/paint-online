@@ -4,6 +4,8 @@ interface BaseSceneNode {
   id: string
   coordinates?: { x: number; y: number }
   rotation?: number
+  backgroundColor?: string
+  color?: string
 }
 
 interface RectangleNode extends BaseSceneNode {
@@ -54,3 +56,11 @@ export type Bounds = {
 }
 
 export type SceneNode = RectangleNode | CircleNode | PathNode | TriangleNode | SquareNode
+
+export type Handles = {
+  topLeft: { x: number; y: number; cursor: string }
+  topRight: { x: number; y: number; cursor: string }
+  bottomRight: { x: number; y: number; cursor: string }
+  bottomLeft: { x: number; y: number; cursor: string }
+  rotate: { x: number; y: number; cursor: string }
+}

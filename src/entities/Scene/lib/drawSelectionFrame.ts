@@ -53,7 +53,6 @@ export function createNodeFrame(
   const centerY = bounds.top + height / 2
 
   overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height)
-
   overlayCtx.save()
   overlayCtx.translate(centerX, centerY)
   overlayCtx.rotate(hitNode.rotation ?? 0)
