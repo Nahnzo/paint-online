@@ -10,18 +10,26 @@ export class Brush implements ToolStrategy {
     this.lastPoint = point
   }
 
-  onMove(baseCtx: CanvasRenderingContext2D, _overlayCtx: CanvasRenderingContext2D, point: Point) {
+  onMove(baseCtx: CanvasRenderingContext2D, overlayCtx: CanvasRenderingContext2D, point: Point) {
     if (!this.lastPoint) return
     const { color = 'white', size = 1 } = this.settings
 
-    baseCtx.strokeStyle = color
-    baseCtx.lineWidth = size
-    baseCtx.lineCap = 'round'
+    // baseCtx.strokeStyle = color
+    // baseCtx.lineWidth = size
+    // baseCtx.lineCap = 'round'
 
-    baseCtx.beginPath()
-    baseCtx.moveTo(this.lastPoint.x, this.lastPoint.y)
-    baseCtx.lineTo(point.x, point.y)
-    baseCtx.stroke()
+    // baseCtx.beginPath()
+    // baseCtx.moveTo(this.lastPoint.x, this.lastPoint.y)
+    // baseCtx.lineTo(point.x, point.y)
+    // baseCtx.stroke()
+    overlayCtx.strokeStyle = color
+    overlayCtx.lineWidth = size
+    overlayCtx.lineCap = 'round'
+
+    overlayCtx.beginPath()
+    overlayCtx.moveTo(this.lastPoint.x, this.lastPoint.y)
+    overlayCtx.lineTo(point.x, point.y)
+    overlayCtx.stroke()
 
     this.lastPoint = point
   }

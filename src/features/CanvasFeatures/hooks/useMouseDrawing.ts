@@ -12,6 +12,7 @@ import {
   getBoxHandles,
 } from 'entities/Scene'
 import { CanvasProps, getCanvasMode } from 'entities/Canvas'
+import { getCanvasViewport } from 'entities/Canvas/model/selectors'
 
 export const useMouseDrawing = ({ baseRef, overlayRef }: CanvasProps) => {
   const { addNode, selectNode, clearSelection } = useActionCreators(sceneActions)
@@ -21,9 +22,11 @@ export const useMouseDrawing = ({ baseRef, overlayRef }: CanvasProps) => {
   const canvasMode = useAppSelector(getCanvasMode)
   const nodes = useAppSelector(getNodesSelector)
   const selectedIds = useAppSelector(getSelectedIdsSelector)
+  const viewport = useAppSelector(getCanvasViewport)
 
   const selectedIdsRef = useRef(selectedIds)
   const nodesRef = useRef(nodes)
+  const viewportRef = useRef(viewport)
 
   useEffect(() => {
     nodesRef.current = nodes
@@ -32,6 +35,10 @@ export const useMouseDrawing = ({ baseRef, overlayRef }: CanvasProps) => {
   useEffect(() => {
     selectedIdsRef.current = selectedIds
   }, [selectedIds])
+
+  useEffect(() => {
+    viewportRef.current = viewport
+  }, [viewport])
 
   const handleFinishNode = useCallback(
     (node: SceneNode) => {
@@ -42,9 +49,18 @@ export const useMouseDrawing = ({ baseRef, overlayRef }: CanvasProps) => {
         clearSelection()
       }
     },
-
     [addNode, clearSelection, selectNode],
   )
+
+  useEffect(() => {
+    const overlayCanvas = overlayRef.current
+    if (!overlayCanvas) return
+    const overlayCtx = overlayCanvas.getContext('2d')
+    if (!overlayCtx) return
+
+    overlayCtx.setTransform(1, 0, 0, 1, 0, 0)
+    overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height)
+  }, [overlayRef, viewport])
 
   useEffect(() => {
     if (canvasMode !== 'draw') return
@@ -60,11 +76,29 @@ export const useMouseDrawing = ({ baseRef, overlayRef }: CanvasProps) => {
     let drawing = false
     let brush: ToolStrategy | null = null
 
+    const applyOverlayTransform = () => {
+      const { percent, offsetX, offsetY } = viewportRef.current
+      const scale = percent / 100
+      overlayCtx.setTransform(scale, 0, 0, scale, offsetX, offsetY)
+    }
+
+    const clearOverlay = () => {
+      overlayCtx.setTransform(1, 0, 0, 1, 0, 0)
+      overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height)
+      applyOverlayTransform()
+    }
+
     const getPoint = (e: MouseEvent): Point => {
       const rect = overlayCanvas.getBoundingClientRect()
+      const screenX = e.clientX - rect.left
+      const screenY = e.clientY - rect.top
+
+      const { percent, offsetX, offsetY } = viewportRef.current
+      const scale = percent / 100
+
       return {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
+        x: (screenX - offsetX) / scale,
+        y: (screenY - offsetY) / scale,
       }
     }
 
@@ -98,6 +132,8 @@ export const useMouseDrawing = ({ baseRef, overlayRef }: CanvasProps) => {
 
       drawing = true
       brush = createTool(brushType, toolSettings, handleFinishNode)
+
+      applyOverlayTransform()
       brush.onStart(baseCtx, overlayCtx, point)
     }
 
@@ -105,6 +141,8 @@ export const useMouseDrawing = ({ baseRef, overlayRef }: CanvasProps) => {
       const point = getPoint(e)
       overlayCanvas.style.cursor = isOverSelectedNode(point) ? 'grab' : 'crosshair'
       if (!drawing || !brush) return
+
+      applyOverlayTransform()
       brush.onMove(baseCtx, overlayCtx, point)
     }
 
@@ -114,6 +152,8 @@ export const useMouseDrawing = ({ baseRef, overlayRef }: CanvasProps) => {
       drawing = false
       brush.onEnd(baseCtx, overlayCtx)
       brush = null
+
+      clearOverlay()
     }
 
     overlayCanvas.addEventListener('mousedown', onMouseDown)

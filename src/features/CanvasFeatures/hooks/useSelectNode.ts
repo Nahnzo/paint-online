@@ -18,12 +18,15 @@ import {
 } from 'entities/Scene'
 import { getCanvasMode } from 'entities/Canvas'
 import { useZoom } from './useZoom'
+import { getCanvasViewport } from 'entities/Canvas/model/selectors'
 
 export const useSelectNode = (overlayRef: React.RefObject<HTMLCanvasElement>) => {
   const nodes = useAppSelector(getNodesSelector)
   const selectedIds = useAppSelector(getSelectedIdsSelector)
   const canvasMode = useAppSelector(getCanvasMode)
   const zoomState = useZoom(overlayRef)
+  const viewport = useAppSelector(getCanvasViewport)
+  const viewportRef = useRef(viewport)
 
   const { selectMultiNode, selectNode, clearSelection } = useActionCreators(sceneActions)
 
@@ -38,9 +41,15 @@ export const useSelectNode = (overlayRef: React.RefObject<HTMLCanvasElement>) =>
 
     const getPoint = (e: MouseEvent): Point => {
       const rect = canvas.getBoundingClientRect()
+      const screenX = e.clientX - rect.left
+      const screenY = e.clientY - rect.top
+
+      const { percent, offsetX, offsetY } = viewportRef.current
+      const scale = percent / 100
+
       return {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
+        x: (screenX - offsetX) / scale,
+        y: (screenY - offsetY) / scale,
       }
     }
 

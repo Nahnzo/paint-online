@@ -15,8 +15,8 @@ import {
 import { useActionCreators, useAppSelector } from 'shared/hooks/hooks'
 import { brushActions, getBrushType } from 'entities/Brush'
 import { sceneActions } from 'entities/Scene'
-import './index.scss'
 import { getCanvasViewport } from 'entities/Canvas/model/selectors'
+import './index.scss'
 
 function App() {
   const baseRef = useRef<HTMLCanvasElement>(null)
@@ -36,7 +36,7 @@ function App() {
   return (
     <div className="canvasContainer">
       <Toolbar position="left">
-        zoom{canvasZoom.percent}
+        zoom {canvasZoom.percent}%
         <ActiveToolCanvas />
       </Toolbar>
       <Toolbar position="top">
